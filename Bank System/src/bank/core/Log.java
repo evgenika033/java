@@ -1,6 +1,8 @@
 package bank.core;
 
 public class Log {
+	
+
 	private long timestamp;
 	private int clientId;
 	private String description;
@@ -18,5 +20,9 @@ public class Log {
 		return "Log [timestamp=" + timestamp + ", clientId=" + clientId+", description="
 					+description+", amount="+amount+"]";
 	}
-
+	
+	@Override
+	public String toString() {
+		return getData();
+	}
 }

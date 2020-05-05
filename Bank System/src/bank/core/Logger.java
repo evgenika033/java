@@ -9,7 +9,7 @@ public class Logger {
 		
 	}
 	//implement to print Log (פעולה)on screen
-	public void log(Log log) {
+	public static void log(Log log) {
 		System.out.println(log.getData());
 	}
 	

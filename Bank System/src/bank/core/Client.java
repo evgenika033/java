@@ -1,22 +1,19 @@
 package bank.core;
 
-import java.lang.reflect.Array;
 
-public class Client {
+public abstract class Client {
 	private int id;
 	private String name;
 	private float balance;
 	private Account[] accounts = new Account[5];
-	private float commissionRate;
-	private float interestRate;
-	private Logger logger;
+	protected float commissionRate;
+	protected float interestRate;
 
 	public Client(int id, String name, float balance) {
 		super();
 		this.id = id;
 		this.name = name;
 		this.balance = balance;
-		logger = new Logger(null);
 
 	}
 
@@ -56,7 +53,7 @@ public class Client {
 				String description = "account added: " + account.getId();
 				float amount = account.getBalance();
 				Log log = new Log(timeStamp, id, description, amount);
-				logger.log(log);
+				Logger.log(log);
 				return;
 			}
 
@@ -71,7 +68,7 @@ public class Client {
 		return null;
 	}
 
-	public void removeAccount(int id) {
+	public void removeAccount(Account account) {
 		/*
 		 * remove account (int id) : void - remove the account with the same id from the
 		 * array (by assigning a 'null' value to the array[position]) & transfers the
@@ -79,21 +76,21 @@ public class Client {
 		 * appropriate data and sending it to the Logger.log(..) method.
 		 */
 		for (int i = 0; i < accounts.length; i++) {
-			if (accounts[i] != null && accounts[i].getId() == id) {
-				Account account = accounts[i];
+			if (accounts[i] != null && accounts[i].equals(account)) {
+				Account currAccount = accounts[i];
 				accounts[i] = null;
-				balance += account.getBalance();
+				balance += currAccount.getBalance();
 				long timeStamp = System.currentTimeMillis();
-				String description = "account removed: " + account.getId();
-				float amount = account.getBalance();
-				Log log = new Log(timeStamp, id, description, amount);
-				logger.log(log);
+				String description = "account removed: " + currAccount.getId();
+				float amount = currAccount.getBalance();
+				Log log = new Log(timeStamp, currAccount.getId(), description, amount);
+				Logger.log(log);
 				return;
 
 			}
 
 		}
-		System.out.println(" Account id " + id + " was not removed(not found)");
+		System.out.println(" Account id " + account.getId() + " was not removed(not found)");
 	}
 
 	public void deposit(float balance) {
@@ -106,11 +103,12 @@ public class Client {
 		float commission = balance * commissionRate;
 		this.balance += balance;
 		this.balance -= commission;
+		Bank.getInstance().addCommission(commission);
 		long timeStamp = System.currentTimeMillis();
 		String description = "deposit";
 		float amount = balance;
 		Log log = new Log(timeStamp, id, description, amount);
-		logger.log(log);
+		Logger.log(log);
 
 	}
 
@@ -122,7 +120,7 @@ public class Client {
 		String description = "withdraw";
 		float amount = balance;
 		Log log = new Log(timeStamp, id, description, amount);
-		logger.log(log);
+		Logger.log(log);
 	}
 
 	public void autoUpdateAccounts() {
@@ -140,7 +138,7 @@ public class Client {
 				String description = "autoUpdateAccount: " + account.getId();
 				float amount = interest;
 				Log log = new Log(timeStamp, id, description, amount);
-				logger.log(log);
+				Logger.log(log);
 			}
 
 		}
@@ -159,4 +157,28 @@ public class Client {
 		}
 		return fortune;
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + id;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (!(obj instanceof Client)) {
+			return false;
+		}
+		Client other = (Client) obj;
+		if (id != other.id) {
+			return false;
+		}
+		return true;
+	}
+	
 }

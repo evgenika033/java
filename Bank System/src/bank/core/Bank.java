@@ -1,15 +1,36 @@
 package bank.core;
 
+
+
+
 public class Bank {
 	private Client[] clients = new Client[100];
 	private Logger logService;
 	private String accountUpdater;
-	private Logger logger= new Logger(null);
 	private float balance;
+	private static Bank instance= new Bank();
+	
 
-	public Bank() {
+	private  Bank() {
 		// An empty constructor that instantiates the clients array and logService.
-		super();
+		
+	}
+	public static Bank getInstance () {
+		return instance;
+	}
+	
+	public void addCommission(float commissionAmount) {
+		balance+= commissionAmount;
+	}
+	
+	public void printClientList() {
+		Client[] clients=getClients();
+		System.out.println("=== Client List ====");
+		for (int i = 0; i < clients.length; i++) {
+			System.out.println(clients[i]);
+			
+		}
+		System.out.println("=================");
 	}
 
 	public void setBalance(float balance) {
@@ -49,24 +70,24 @@ public class Bank {
 				String description = "addClient";
 				float amount = client.getFortune();
 				Log log = new Log(timeStamp, client.getId(), description, amount);
-				logger.log(log);
+				Logger.log(log);
 				break;
 			}
 		}
 	}
 
-	public void removeClient(int id) {
+	public void removeClient(Client client) {
 		// remove the client with the same id from the array (by assigning a 'null'
 		// value to the array[position]). Log the operation.
 		for (int i = 0; i < clients.length; i++) {
-			if (clients[i] != null && clients[i].getId() == id) {
-				Client client = clients[i];
+			if (clients[i] != null && clients[i].equals(client)) {
+				Client currClient = clients[i];
 				clients[i] = null;
 				long timeStamp = System.currentTimeMillis();
 				String description = "removeClient";
-				float amount = client.getFortune();
-				Log log = new Log(timeStamp, client.getId(), description, amount);
-				logger.log(log);
+				float amount = currClient.getFortune();
+				Log log = new Log(timeStamp, currClient.getId(), description, amount);
+				Logger.log(log);
 				break;
 			}
 		}
@@ -78,9 +99,8 @@ public class Bank {
 			if (clients[i] != null) {
 				numberOfClients++;
 			}
-
 		}
-
+	
 		Client[] clients = new Client[numberOfClients];
 		int index = 0;
 		for (int i = 0; i < this.clients.length; i++) {
