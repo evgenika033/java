@@ -1,11 +1,11 @@
-package bank;
+package bank.core;
 
 public class Log {
 	private long timestamp;
 	private int clientId;
 	private String description;
 	private float amount;
-	
+
 	public Log(long timestamp, int clientId, String description, float amount) {
 		super();
 		this.timestamp = timestamp;
@@ -13,13 +13,10 @@ public class Log {
 		this.description = description;
 		this.amount = amount;
 	}
-	
+
 	public String getData() {
-		return "";
+		return "Log [timestamp=" + timestamp + ", clientId=" + clientId+", description="
+					+description+", amount="+amount+"]";
 	}
-		
-	
-		
-	
 
 }
