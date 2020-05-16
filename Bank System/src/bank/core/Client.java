@@ -1,5 +1,6 @@
 package bank.core;
 
+import exception.bank.core.WithdrowException;
 
 public abstract class Client {
 	private int id;
@@ -112,13 +113,17 @@ public abstract class Client {
 
 	}
 
-	public void withdraw(float balance) {
-		float commission = balance * commissionRate;
-		this.balance -= balance;
+	public void withdraw(float withdrawAmount) throws WithdrowException {
+		float commission = withdrawAmount * commissionRate;
+		if (withdrawAmount + commission > this.balance) {
+			throw new WithdrowException("withdrau error - you do not have enough money", id, this.balance,
+					withdrawAmount + commission);
+		}
+		this.balance -= withdrawAmount;
 		this.balance -= commission;
 		long timeStamp = System.currentTimeMillis();
 		String description = "withdraw";
-		float amount = balance;
+		float amount = withdrawAmount;
 		Log log = new Log(timeStamp, id, description, amount);
 		Logger.log(log);
 	}
@@ -150,9 +155,9 @@ public abstract class Client {
 		// total account balance.
 		float fortune = balance;
 		for (int i = 0; i < accounts.length; i++) {
-			if(accounts[i]!= null) {
+			if (accounts[i] != null) {
 				fortune += accounts[i].getBalance();
-				
+
 			}
 		}
 		return fortune;
@@ -180,5 +185,5 @@ public abstract class Client {
 		}
 		return true;
 	}
-	
+
 }
