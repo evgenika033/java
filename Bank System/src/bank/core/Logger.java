@@ -1,5 +1,8 @@
 package bank.core;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Logger {
 	private String driverName;
 
@@ -13,7 +16,8 @@ public class Logger {
 		System.out.println(log.getData());
 	}
 	
-	public Log[] getLogs() {
-		return null;
+	public List<Log> getLogs() {
+		List<Log> list= new ArrayList<>();
+		return list;
 	}
 }
