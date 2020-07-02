@@ -1,7 +1,10 @@
 package app;
 
 import java.io.File;
+import java.sql.Connection;
+import java.sql.SQLException;
 
+import ConnectionPool.ConnectionPool;
 import configuration.DatabaseCreator;
 import configuration.PropertiesController;
 import exceptions.DatabaseException;
@@ -64,6 +67,13 @@ public class App {
 			System.out.println("read configuration file successfully");
 			System.out.println("regular connection string: " + PropertiesController.getSqlConnection());
 			System.out.println("===================================");
+
+			try {
+				Connection con = ConnectionPool.getInstance().getConnection();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			System.out.println("end");
 		} else {
 			System.out.println(StringHelper.PROPERTIES_NOT_READ);
