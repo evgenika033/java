@@ -4,9 +4,9 @@ import java.io.File;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import ConnectionPool.ConnectionPool;
 import configuration.DatabaseCreator;
 import configuration.PropertiesController;
+import connectionPool.ConnectionPool;
 import exceptions.DatabaseException;
 import exceptions.PropertiesExceptions;
 import utils.StringHelper;

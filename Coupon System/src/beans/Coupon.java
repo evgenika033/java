@@ -1,7 +1,6 @@
 package beans;
 
 import java.util.Date;
-import java.util.Locale.Category;
 
 public class Coupon {
 	private int ID;
@@ -15,9 +14,13 @@ public class Coupon {
 	private double price;
 	private String image;
 
+	public Coupon() {
+		init();
+	}
+
 	public Coupon(int iD, int companyID, Category category, String title, String description, Date startDate,
 			Date endDate, int amount, double price, String image) {
-		super();
+		this();
 		ID = iD;
 		this.companyID = companyID;
 		this.category = category;
@@ -28,6 +31,16 @@ public class Coupon {
 		this.amount = amount;
 		this.price = price;
 		this.image = image;
+
+	}
+
+	private void init() {
+		category = Category.defaultCategory;
+		title = "";
+		description = "";
+		startDate = new Date();
+		endDate = new Date();
+		image = "";
 
 	}
 

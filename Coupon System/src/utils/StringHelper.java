@@ -29,7 +29,7 @@ public class StringHelper {
 	public static final String PROPERTIES_NOT_READ = "properties file cannot be read. program is stopped";
 	public static final String DATABASE_EXEPTION_CREATE_PARAMERTER = "create database parameter is false. see to configuration: ";
 	public static final String DATABASE_EXEPTION_CREATE = "create datatbase exception: ";
-
+	public static final String DAO_EXEPTION_CONNECTION = "dao exception, get connection: ";
 	// ----------------------------------
 	// SQL queries
 	// create/ drop database

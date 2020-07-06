@@ -10,12 +10,24 @@ public class Company {
 	private String password;
 	private List<Coupon> coupons;
 
+	public Company() {
+		init();
+	}
+
 	public Company(int iD, String name, String email, String password) {
-		super();
+
+		this();
 		ID = iD;
 		this.name = name;
 		this.email = email;
 		this.password = password;
+
+	}
+
+	private void init() {
+		name = "";
+		email = "";
+		password = "";
 		coupons = new ArrayList<>();
 	}
 

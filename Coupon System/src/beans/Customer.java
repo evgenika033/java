@@ -10,17 +10,26 @@ public class Customer {
 	private String email;
 	private String password;
 	private List<Coupon> coupons;
-//	private ArrayList<Coupon> coupons() {
-//		return null;
-//	}
+
+	public Customer() {
+		init();
+	}
 
 	public Customer(int iD, String firstName, String lastName, String email, String password) {
-		super();
+		this();
 		ID = iD;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.email = email;
 		this.password = password;
+
+	}
+
+	public void init() {
+		firstName = "";
+		lastName = "";
+		email = "";
+		password = "";
 		coupons = new ArrayList<Coupon>();
 	}
 

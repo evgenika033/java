@@ -2,5 +2,5 @@ package beans;
 
 public enum Category {
 
-	food, electricity, restaurant, vacation;
+	food, electricity, restaurant, vacation, defaultCategory;
 }
