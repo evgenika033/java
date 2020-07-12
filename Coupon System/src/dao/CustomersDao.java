@@ -33,12 +33,6 @@ public class CustomersDao implements ICustomersDao<Customer> {
 	}
 
 	@Override
-	public void delete(Customer deleteObject) throws DaoException {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
 	public void update(Customer updateObject) throws DaoException {
 		// TODO Auto-generated method stub
 
@@ -60,6 +54,12 @@ public class CustomersDao implements ICustomersDao<Customer> {
 	public boolean isCustomerExist(String email, String password) throws DaoException {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	@Override
+	public void delete(int objectID) throws DaoException {
+		// TODO Auto-generated method stub
+
 	}
 
 }

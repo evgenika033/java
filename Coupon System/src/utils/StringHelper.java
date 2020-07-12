@@ -49,4 +49,24 @@ public class StringHelper {
 	public static final String SQL_CREATE_TABLE_COUPONS = "create table coupons(couponId int identity (1001,1),companyId int,categoryId int,title text,description text,startDate date,endDate date,amount int,price float,image text,constraint coupons_couponsId_pk primary key(couponId))";
 	public static final String SQL_CREATE_TABLE_CUSTOMERSVSCOUPONS = "create table customersVSCoupons(customerId int,couponId int,constraint customersVSCoupons_customerId_couponId_pk primary key(customerId,couponId))";
 
+	// replace _TABLE_NAME_ with table name( companies)
+	// replace _PARAMETERS_ with
+	// parameters(companyName=?,companyEmail=?,companyPassword=? where companyId=?)
+	public static final String SQL_UPDATE = "update _TABLE_NAME_ set _UPDATE_PARAMETERS_";
+
+	// replace _TABLE_NAME_ with table name( companies)
+	// replace _ADD_PARAMETERS_ with table parameters(?,?,?)
+	public static final String SQL_ADD = "insert into _TABLE_NAME_ values(_ADD_PARAMETERS_)";
+
+	// replace _TABLE_NAME_ with table name( companies)
+	// replace _GET_PARAMETERS_ with table parameters(companyId=?)
+	public static final String SQL_GET = "select * from _TABLE_NAME_ where _GET_PARAMETERS_";
+
+	// replace _TABLE_NAME_ with table name( companies)
+	public static final String sql_GET_ALL = "select * from _TABLE_NAME_";
+
+	// replace _TABLE_NAME_ with table name( companies)
+	// replace _DELETE_PARAMETERS_ with table parameters(companyId=?)
+	public static final String SQL_DELETE = "delete from _TABLE_NAME_ where _DELETE_PARAMETERS_";
+
 }

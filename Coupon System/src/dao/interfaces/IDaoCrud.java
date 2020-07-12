@@ -8,7 +8,7 @@ public interface IDaoCrud<T> {
 
 	void add(T addObject) throws DaoException;
 
-	void delete(T deleteObject) throws DaoException;
+	void delete(int objectID) throws DaoException;
 
 	void update(T updateObject) throws DaoException;
 

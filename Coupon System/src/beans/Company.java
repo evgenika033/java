@@ -14,13 +14,18 @@ public class Company {
 		init();
 	}
 
-	public Company(int iD, String name, String email, String password) {
-
+	public Company(String name, String email, String password) {
 		this();
-		ID = iD;
 		this.name = name;
 		this.email = email;
 		this.password = password;
+
+	}
+
+	public Company(int id, String name, String email, String password) {
+
+		this(name, email, password);
+		this.ID = id;
 
 	}
 

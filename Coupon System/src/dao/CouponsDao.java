@@ -32,12 +32,6 @@ public class CouponsDao implements ICouponsDao<Coupon> {
 	}
 
 	@Override
-	public void delete(Coupon deleteObject) throws DaoException {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
 	public void update(Coupon updateObject) throws DaoException {
 		// TODO Auto-generated method stub
 
@@ -63,6 +57,12 @@ public class CouponsDao implements ICouponsDao<Coupon> {
 
 	@Override
 	public void deleteCouponPurchase(int customerID, int couponID) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void delete(int objectID) throws DaoException {
 		// TODO Auto-generated method stub
 
 	}
