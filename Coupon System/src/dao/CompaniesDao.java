@@ -21,13 +21,18 @@ public class CompaniesDao implements ICompaniesDao<Company> {
 	private final String GET_PARAMETERS = "companyId=?";
 	private final String DELETE_PARAMETERS = "companyId=?";
 
-	public CompaniesDao() throws DaoException {
-		init();
-	}
-
-	private void init() throws DaoException {
+	private void getConnection() throws DaoException {
 		try {
 			connection = ConnectionPool.getInstance().getConnection();
+		} catch (SQLException e) {
+			throw new DaoException(StringHelper.DAO_EXEPTION_CONNECTION, e);
+		}
+	}
+
+	private void returnConnection() throws DaoException {
+		try {
+			ConnectionPool.getInstance().returnConnection(connection);
+			connection = null;
 		} catch (SQLException e) {
 			throw new DaoException(StringHelper.DAO_EXEPTION_CONNECTION, e);
 		}
@@ -39,13 +44,16 @@ public class CompaniesDao implements ICompaniesDao<Company> {
 		// replace place_holders
 		sql = sql.replaceAll("_TABLE_NAME_", table).replaceAll("_ADD_PARAMETERS_", ADD_PARAMETERS);
 		System.out.println(sql);
+		getConnection();
 		try (PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
 			preparedStatement.setString(1, addObject.getName());
 			preparedStatement.setString(2, addObject.getEmail());
 			preparedStatement.setString(3, addObject.getPassword());
 			preparedStatement.executeUpdate();
 			System.out.println("inserted");
+			returnConnection();
 		} catch (SQLException e) {
+			returnConnection();
 			throw new DaoException("insert exception: ", e);
 		}
 
@@ -56,12 +64,14 @@ public class CompaniesDao implements ICompaniesDao<Company> {
 		String sql = StringHelper.SQL_UPDATE;
 		sql = sql.replaceAll("_TABLE_NAME_", table).replaceAll("_UPDATE_PARAMETERS_", UPDATE_PARAMETERS);
 		System.out.println(sql);
+		getConnection();
 		try (PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
 			preparedStatement.setString(1, updateObject.getName());
 			preparedStatement.setString(2, updateObject.getEmail());
 			preparedStatement.setString(3, updateObject.getPassword());
 			preparedStatement.setInt(4, updateObject.getID());
 			int result = preparedStatement.executeUpdate();
+			returnConnection();
 			// TODO need to remove
 			if (result > 0) {
 				System.out.println("updated true");
@@ -69,6 +79,7 @@ public class CompaniesDao implements ICompaniesDao<Company> {
 				System.out.println("updated false");
 			}
 		} catch (SQLException e) {
+			returnConnection();
 			throw new DaoException("updated exception: ", e);
 		}
 
@@ -78,6 +89,7 @@ public class CompaniesDao implements ICompaniesDao<Company> {
 	public Company get(int id) throws DaoException {
 		String sql = StringHelper.SQL_GET;
 		sql = sql.replaceAll("_TABLE_NAME_", table).replaceAll("_GET_PARAMETERS_", GET_PARAMETERS);
+		getConnection();
 		try (PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
 			preparedStatement.setInt(1, id);
 			ResultSet resultSet = preparedStatement.executeQuery();
@@ -86,10 +98,13 @@ public class CompaniesDao implements ICompaniesDao<Company> {
 				String name = resultSet.getString("companyName");
 				String email = resultSet.getString("companyEmail");
 				String password = resultSet.getString("companyPassword");
+				returnConnection();
 				return new Company(ID, name, email, password);
 			}
+			returnConnection();
 			return null;
 		} catch (SQLException e) {
+			returnConnection();
 			throw new DaoException("get exception: ", e);
 		}
 
@@ -100,6 +115,7 @@ public class CompaniesDao implements ICompaniesDao<Company> {
 		List<Company> list = new ArrayList<>();
 		String sql = StringHelper.sql_GET_ALL;
 		sql = sql.replaceAll("_TABLE_NAME_", table);
+		getConnection();
 		try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
 			// preparedStatement.setString(1, table);
 			ResultSet resultSet = preparedStatement.executeQuery();
@@ -110,8 +126,10 @@ public class CompaniesDao implements ICompaniesDao<Company> {
 				String password = resultSet.getString("companyPassword");
 				list.add(new Company(ID, name, email, password));
 			}
+			returnConnection();
 			return list;
 		} catch (SQLException e) {
+			returnConnection();
 			throw new DaoException("getAll exception: ", e);
 		}
 
@@ -122,18 +140,19 @@ public class CompaniesDao implements ICompaniesDao<Company> {
 		String sql = "select COUNT (*)from _TABLE_NAME_ where companyEmail like ? and companyPassword like ?";
 		sql = sql.replaceAll("_TABLE_NAME_", table);
 		System.out.println(sql);
-
+		getConnection();
 		try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
 			preparedStatement.setString(1, email);
 			preparedStatement.setString(2, password);
 			ResultSet resultSet = preparedStatement.executeQuery();
 			if (resultSet.next()) {
 				int counter = resultSet.getInt(1);
+				returnConnection();
 				return counter > 0;
 			}
 		} catch (SQLException e) {
+			returnConnection();
 			throw new DaoException("getAll exception: ", e);
-
 		}
 
 		return false;
@@ -144,10 +163,14 @@ public class CompaniesDao implements ICompaniesDao<Company> {
 		String sql = StringHelper.SQL_DELETE;
 		sql = sql.replaceAll("_TABLE_NAME_", table).replaceAll("_DELETE_PARAMETERS_", DELETE_PARAMETERS);
 		System.out.println(sql);
+		getConnection();
 		try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
 			preparedStatement.setInt(1, objectID);
-			System.out.println("deleted: " + preparedStatement.executeUpdate());
+			int result = preparedStatement.executeUpdate();
+			returnConnection();
+			System.out.println("deleted: " + result);
 		} catch (SQLException e) {
+			returnConnection();
 			throw new DaoException("delete exception: ", e);
 		}
 	}

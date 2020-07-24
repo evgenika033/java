@@ -48,4 +48,9 @@ public class ConnectionPool {
 
 	}
 
+	public synchronized void returnConnection(Connection connection) {
+		connections.add(connection);
+		notifyAll();
+	}
+
 }

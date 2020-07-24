@@ -15,4 +15,5 @@ public interface IDaoCrud<T> {
 	T get(int id) throws DaoException;
 
 	List<T> getAll() throws DaoException;
+
 }

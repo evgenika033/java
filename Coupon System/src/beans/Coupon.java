@@ -1,6 +1,6 @@
 package beans;
 
-import java.util.Date;
+import java.sql.Date;
 
 public class Coupon {
 	private int ID;
@@ -18,10 +18,9 @@ public class Coupon {
 		init();
 	}
 
-	public Coupon(int iD, int companyID, Category category, String title, String description, Date startDate,
-			Date endDate, int amount, double price, String image) {
+	public Coupon(int companyID, Category category, String title, String description, Date startDate, Date endDate,
+			int amount, double price, String image) {
 		this();
-		ID = iD;
 		this.companyID = companyID;
 		this.category = category;
 		this.title = title;
@@ -34,13 +33,20 @@ public class Coupon {
 
 	}
 
+	public Coupon(int ID, int companyID, Category category, String title, String description, Date startDate,
+			Date endDate, int amount, double price, String image) {
+		this(companyID, category, title, description, startDate, endDate, amount, price, image);
+		this.ID = ID;
+
+	}
+
 	private void init() {
-		category = Category.defaultCategory;
-		title = "";
-		description = "";
-		startDate = new Date();
-		endDate = new Date();
-		image = "";
+//		category = Category.DEFAULT;
+//		title = "";
+//		description = "";
+//		startDate = Date.valueOf("2020-07-12");
+//		endDate = Date.valueOf("2020-07-12");
+//		image = "";
 
 	}
 
@@ -49,7 +55,7 @@ public class Coupon {
 	}
 
 	public void setID(int iD) {
-		ID = iD;
+		this.ID = ID;
 	}
 
 	public int getCompanyID() {

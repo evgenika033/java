@@ -15,13 +15,18 @@ public class Customer {
 		init();
 	}
 
-	public Customer(int iD, String firstName, String lastName, String email, String password) {
+	public Customer(String firstName, String lastName, String email, String password) {
 		this();
-		ID = iD;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.email = email;
 		this.password = password;
+
+	}
+
+	public Customer(int ID, String firstName, String lastName, String email, String password) {
+		this(firstName, lastName, email, password);
+		this.ID = ID;
 
 	}
 
@@ -37,8 +42,8 @@ public class Customer {
 		return ID;
 	}
 
-	public void setID(int iD) {
-		ID = iD;
+	public void setID(int ID) {
+		this.ID = ID;
 	}
 
 	public String getFirstName() {
