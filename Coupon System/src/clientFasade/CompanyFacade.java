@@ -3,8 +3,8 @@ package clientFasade;
 import java.util.List;
 
 import beans.Category;
+import beans.Company;
 import beans.Coupon;
-import beans.Customer;
 import exceptions.DaoException;
 
 public class CompanyFacade extends ClientFasade {
@@ -21,35 +21,35 @@ public class CompanyFacade extends ClientFasade {
 		return companiesDao.isCompanyExist(email, password);
 	}
 
-	public void addCoupon(Coupon coupon) {
+	public void addCoupon(Coupon coupon) throws DaoException {
+		couponsDao.add(coupon);
+	}
+
+	public void updateCoupon(Coupon coupon) throws DaoException {
+		couponsDao.update(coupon);
+	}
+
+	public void deleteCoupon(int couponID) throws DaoException {
+		couponsDao.delete(couponID);
+	}
+
+	public List<Coupon> getCompanyCoupons() throws DaoException {
+		return couponsDao.getCompanyCoupons(companyID);
 
 	}
 
-	public void updateCoupon(Coupon coupon) {
+	public List<Coupon> getCompanyCoupons(Category category) throws DaoException {
+		return couponsDao.getCompanyCoupons(companyID, category);
 
 	}
 
-	public void deleteCoupon(int couponID) {
+	public List<Coupon> getCompanyCoupons(double maxPrice) throws DaoException {
+		return couponsDao.getCompanyCoupons(companyID, maxPrice);
 
 	}
 
-	public List<Coupon> getCompanyCoupons() {
-		return null;
-
-	}
-
-	public List<Coupon> getCompanyCoupons(Category category) {
-		return null;
-
-	}
-
-	public List<Coupon> getCompanyCoupons(double maxPrice) {
-		return null;
-
-	}
-
-	public Customer getCompanyDetails() {
-		return null;
+	public Company getCompanyDetails() throws DaoException {
+		return companiesDao.get(companyID);
 
 	}
 

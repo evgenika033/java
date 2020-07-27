@@ -15,11 +15,6 @@ import utils.StringHelper;
 
 public class CompaniesDao implements ICompaniesDao<Company> {
 	private Connection connection;
-	private final String table = "companies";
-	private final String UPDATE_PARAMETERS = "companyName=?,companyEmail=?,companyPassword=? where companyId=?";
-	private final String ADD_PARAMETERS = "?,?,?";
-	private final String GET_PARAMETERS = "companyId=?";
-	private final String DELETE_PARAMETERS = "companyId=?";
 
 	private void getConnection() throws DaoException {
 		try {
@@ -42,19 +37,22 @@ public class CompaniesDao implements ICompaniesDao<Company> {
 	public void add(Company addObject) throws DaoException {
 		String sql = StringHelper.SQL_ADD;// "insert into _TABLE_NAME_ values(_ADD_PARAMETERS_)";
 		// replace place_holders
-		sql = sql.replaceAll("_TABLE_NAME_", table).replaceAll("_ADD_PARAMETERS_", ADD_PARAMETERS);
-		System.out.println(sql);
-		getConnection();
-		try (PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
-			preparedStatement.setString(1, addObject.getName());
-			preparedStatement.setString(2, addObject.getEmail());
-			preparedStatement.setString(3, addObject.getPassword());
-			preparedStatement.executeUpdate();
-			System.out.println("inserted");
-			returnConnection();
-		} catch (SQLException e) {
-			returnConnection();
-			throw new DaoException("insert exception: ", e);
+		sql = sql.replaceAll(StringHelper.TABLE_PLACE_HOLDER, StringHelper.TABLE_COMPANIES)
+				.replaceAll(StringHelper.PARAMETERS_ADD_PLACE_HOLDER, StringHelper.ADD_PARAMETERS_COMPANIES);
+		if (!isCompanyExistByNameOrEmail(addObject.getName(), addObject.getEmail())) {
+			System.out.println(sql);
+			getConnection();
+			try (PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
+				preparedStatement.setString(1, addObject.getName());
+				preparedStatement.setString(2, addObject.getEmail());
+				preparedStatement.setString(3, addObject.getPassword());
+				preparedStatement.executeUpdate();
+				System.out.println("inserted");
+				returnConnection();
+			} catch (SQLException e) {
+				returnConnection();
+				throw new DaoException(StringHelper.EXCEPTION_INSERT, e);
+			}
 		}
 
 	}
@@ -62,7 +60,8 @@ public class CompaniesDao implements ICompaniesDao<Company> {
 	@Override
 	public void update(Company updateObject) throws DaoException {
 		String sql = StringHelper.SQL_UPDATE;
-		sql = sql.replaceAll("_TABLE_NAME_", table).replaceAll("_UPDATE_PARAMETERS_", UPDATE_PARAMETERS);
+		sql = sql.replaceAll(StringHelper.TABLE_PLACE_HOLDER, StringHelper.TABLE_COMPANIES)
+				.replaceAll(StringHelper.PARAMETERS_UPDATE_PLACE_HOLDER, StringHelper.UPDATE_PARAMETERS_COMPANIES);
 		System.out.println(sql);
 		getConnection();
 		try (PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
@@ -80,7 +79,7 @@ public class CompaniesDao implements ICompaniesDao<Company> {
 			}
 		} catch (SQLException e) {
 			returnConnection();
-			throw new DaoException("updated exception: ", e);
+			throw new DaoException(StringHelper.EXCEPTION_UPDATE, e);
 		}
 
 	}
@@ -88,7 +87,8 @@ public class CompaniesDao implements ICompaniesDao<Company> {
 	@Override
 	public Company get(int id) throws DaoException {
 		String sql = StringHelper.SQL_GET;
-		sql = sql.replaceAll("_TABLE_NAME_", table).replaceAll("_GET_PARAMETERS_", GET_PARAMETERS);
+		sql = sql.replaceAll(StringHelper.TABLE_PLACE_HOLDER, StringHelper.TABLE_COMPANIES)
+				.replaceAll(StringHelper.PARAMETERS_GET_PLACE_HOLDER, StringHelper.GET_PARAMETERS_COMPANIES);
 		getConnection();
 		try (PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
 			preparedStatement.setInt(1, id);
@@ -105,7 +105,7 @@ public class CompaniesDao implements ICompaniesDao<Company> {
 			return null;
 		} catch (SQLException e) {
 			returnConnection();
-			throw new DaoException("get exception: ", e);
+			throw new DaoException(StringHelper.EXCEPTION_GET, e);
 		}
 
 	}
@@ -114,7 +114,7 @@ public class CompaniesDao implements ICompaniesDao<Company> {
 	public List<Company> getAll() throws DaoException {
 		List<Company> list = new ArrayList<>();
 		String sql = StringHelper.sql_GET_ALL;
-		sql = sql.replaceAll("_TABLE_NAME_", table);
+		sql = sql.replaceAll(StringHelper.TABLE_PLACE_HOLDER, StringHelper.TABLE_COMPANIES);
 		getConnection();
 		try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
 			// preparedStatement.setString(1, table);
@@ -130,15 +130,15 @@ public class CompaniesDao implements ICompaniesDao<Company> {
 			return list;
 		} catch (SQLException e) {
 			returnConnection();
-			throw new DaoException("getAll exception: ", e);
+			throw new DaoException(StringHelper.EXCEPTION_GET_ALL, e);
 		}
 
 	}
 
 	@Override
 	public boolean isCompanyExist(String email, String password) throws DaoException {
-		String sql = "select COUNT (*)from _TABLE_NAME_ where companyEmail like ? and companyPassword like ?";
-		sql = sql.replaceAll("_TABLE_NAME_", table);
+		String sql = StringHelper.SQL_QUERY_COMPANY_COUNT;
+		sql = sql.replaceAll(StringHelper.TABLE_PLACE_HOLDER, StringHelper.TABLE_COMPANIES);
 		System.out.println(sql);
 		getConnection();
 		try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
@@ -152,7 +152,7 @@ public class CompaniesDao implements ICompaniesDao<Company> {
 			}
 		} catch (SQLException e) {
 			returnConnection();
-			throw new DaoException("getAll exception: ", e);
+			throw new DaoException(StringHelper.EXCEPTION_GET_ALL, e);
 		}
 
 		return false;
@@ -161,7 +161,8 @@ public class CompaniesDao implements ICompaniesDao<Company> {
 	@Override
 	public void delete(int objectID) throws DaoException {
 		String sql = StringHelper.SQL_DELETE;
-		sql = sql.replaceAll("_TABLE_NAME_", table).replaceAll("_DELETE_PARAMETERS_", DELETE_PARAMETERS);
+		sql = sql.replaceAll(StringHelper.TABLE_PLACE_HOLDER, StringHelper.TABLE_COMPANIES)
+				.replaceAll(StringHelper.PARAMETERS_DELETE_PLACE_HOLDER, StringHelper.DELETE_PARAMETERS_COMPANIES);
 		System.out.println(sql);
 		getConnection();
 		try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
@@ -171,8 +172,31 @@ public class CompaniesDao implements ICompaniesDao<Company> {
 			System.out.println("deleted: " + result);
 		} catch (SQLException e) {
 			returnConnection();
-			throw new DaoException("delete exception: ", e);
+			throw new DaoException(StringHelper.EXCEPTION_DELETE, e);
 		}
+	}
+
+	@Override
+	public boolean isCompanyExistByNameOrEmail(String companyName, String companyEmail) throws DaoException {
+		String sql = StringHelper.SQL_QUERY_GET_COMPANY_BY_NAME_OR_EMAIL;
+		System.out.println(sql);
+		getConnection();
+		try (PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
+			preparedStatement.setString(1, companyName);
+			preparedStatement.setString(2, companyEmail);
+			ResultSet resultSet = preparedStatement.executeQuery();
+			if (resultSet.next()) {
+				if (resultSet.getInt(1) > 0) {
+					returnConnection();
+					throw new DaoException(StringHelper.EXCEPTION_COMPANY_ADD_ALREADY_EXIST);
+				}
+			}
+		} catch (SQLException e) {
+			returnConnection();
+			throw new DaoException(StringHelper.EXCEPTION_GET, e);
+		}
+		returnConnection();
+		return false;
 	}
 
 }

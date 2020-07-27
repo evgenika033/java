@@ -69,4 +69,48 @@ public class StringHelper {
 	// replace _DELETE_PARAMETERS_ with table parameters(companyId=?)
 	public static final String SQL_DELETE = "delete from _TABLE_NAME_ where _DELETE_PARAMETERS_";
 
+	public static final String SQL_QUERY_GET_COUPONS_OF_CUSTOMER_BY_PRICE = "select c.couponId,c.companyId,c.categoryId,c.title, c.description, c.startDate,c.endDate,c.amount,c.price,c.image from customersVSCoupons as cc join coupons as c on cc.couponId=c.couponId where customerId=? and price <= ?";
+	public static final String SQL_QUERY_GET_COUPONS_OF_CUSTOMER_BY_CATEGORY = "select c.couponId,c.companyId,c.categoryId,c.title, c.description, c.startDate,c.endDate,c.amount,c.price,c.image from customersVSCoupons as cc join coupons as c on cc.couponId=c.couponId where customerId=? and  categoryId=?";
+	public static final String SQL_QUERY_COMPANY_COUNT = "select COUNT (*) from _TABLE_NAME_ where companyEmail like ? and companyPassword like ?";
+	public static final String SQL_QUERY_CATEGORY_BY_ID = "select categoryName from categories where categoryId=?";
+	public static final String SQL_QUERY_CATEGORY_BY_NAME = "select categoryId from categories where categoryName like ?";
+	public static final String SQL_QUERY_GET_COUPONS_OF_COMPANY_BY_TITLE = "select count (*) from coupons where  companyId=? and title like ?";
+	public static final String SQL_QUERY_GET_COMPANY_BY_NAME_OR_EMAIL = "select count(*) from companies where companyName like ? or companyEmail like ?";
+	// section of sql queries and parameters for special DAO's
+	public static final String TABLE_COUPON = "coupons";
+	public static final String TABLE_CUSTVSCOUPONS = "customersVSCoupons";
+	public static final String UPDATE_PARAMETERS_COUPON = "companyId=?,categoryId=?,title=?,description=?,startDate=?,endDate=?,amount=?,price=?,image=? where couponId=?";
+	public static final String ADD_PARAMETERS_COUPON = "?,?,?,?,?,?,?,?,?";
+	public static final String ADD_PARAMETERS_CUSTVSCOUPONS_COUPON = "?,?";
+	public static final String GET_PARAMETERS_CUSTVSCOUPONS_CUSTOMER = "customerId=?";
+	public static final String GET_PARAMETERS_COUPON = "couponId=?";
+	public static final String GET_PARAMETERS_COUPONS_OF_COMPANY = "companyId=?";
+	public static final String GET_PARAMETERS_COUPONS_OF_COMPANY__BY_CATEGORY = "companyId=? and categoryId=?";
+	public static final String GET_PARAMETERS_COUPONS_OF_COMPANY_BY_PRICE = "companyId=? and price=?";
+
+	public static final String DELETE_PARAMETERS_COUPON = "couponId=?";
+	public static final String DELETE_PARAMETERS_CUSTVSCOUPONS = "customerId=? and couponId=?";
+	public static final String TABLE_PLACE_HOLDER = "_TABLE_NAME_";
+	public static final String TABLE_COMPANIES = "companies";
+	public static final String PARAMETERS_UPDATE_PLACE_HOLDER = "_UPDATE_PARAMETERS_";
+	public static final String PARAMETERS_ADD_PLACE_HOLDER = "_ADD_PARAMETERS_";
+	public static final String PARAMETERS_GET_PLACE_HOLDER = "_GET_PARAMETERS_";
+	public static final String PARAMETERS_DELETE_PLACE_HOLDER = "_DELETE_PARAMETERS_";
+	public static final String UPDATE_PARAMETERS_COMPANIES = "companyName=?,companyEmail=?,companyPassword=? where companyId=?";
+	public static final String ADD_PARAMETERS_COMPANIES = "?,?,?";
+	public static final String GET_PARAMETERS_COMPANIES = "companyId=?";
+	public static final String DELETE_PARAMETERS_COMPANIES = "companyId=?";
+
+	// section exception
+	public static final String EXCEPTION_GET = "get exception: ";
+	public static final String EXCEPTION_GET_ALL = "getAll exception: ";
+	public static final String EXCEPTION_DELETE = "delete exception: ";
+	public static final String EXCEPTION_INSERT = "insert exception: ";
+	public static final String EXCEPTION_UPDATE = "updated exception: ";
+	public static final String EXCEPTION_COUPON_ADD_ALREADY_EXIST = "Coupon with some title is already exist  in current company";
+	public static final String EXCEPTION_COMPANY_ADD_ALREADY_EXIST = "Company with some name or email address is already exist";
+
+	// other
+	public static final String ADMIN_EMAIL = "admin@admin.com";
+	public static final String ADMIN_PASSWORD = "admin";
 }

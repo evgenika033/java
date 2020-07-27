@@ -34,7 +34,7 @@ public class CategoriesDao implements IDaoSimple {
 
 	@Override
 	public String get(int id) throws DaoException {
-		String sql = "select categoryName from categories where categoryId=?";
+		String sql = StringHelper.SQL_QUERY_CATEGORY_BY_ID;
 		getConnection();
 		try (PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
 			preparedStatement.setInt(1, id);
@@ -48,14 +48,14 @@ public class CategoriesDao implements IDaoSimple {
 			return Category.DEFAULT.toString();
 		} catch (SQLException e) {
 			returnConnection();
-			throw new DaoException("get exception: ", e);
+			throw new DaoException(StringHelper.EXCEPTION_GET, e);
 		}
 
 	}
 
 	@Override
 	public int get(String name) throws DaoException {
-		String sql = "select categoryId from categories where categoryName like ?";
+		String sql = StringHelper.SQL_QUERY_CATEGORY_BY_NAME;
 		getConnection();
 		try (PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
 			preparedStatement.setString(1, name);
@@ -69,7 +69,7 @@ public class CategoriesDao implements IDaoSimple {
 			return Category.getCategoryID(Category.DEFAULT);
 		} catch (SQLException e) {
 			returnConnection();
-			throw new DaoException("get exception: ", e);
+			throw new DaoException(StringHelper.EXCEPTION_GET, e);
 		}
 	}
 

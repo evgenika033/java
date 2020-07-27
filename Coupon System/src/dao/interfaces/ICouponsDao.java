@@ -17,4 +17,12 @@ public interface ICouponsDao<T> extends IDaoCrud<T> {
 
 	List<Coupon> getCustomerCoupons(int customerID, double maxPrice) throws DaoException;
 
+	List<Coupon> getCompanyCoupons(int companyID) throws DaoException;
+
+	List<Coupon> getCompanyCoupons(int companyID, Category category) throws DaoException;
+
+	List<Coupon> getCompanyCoupons(int companyID, double maxPrice) throws DaoException;
+
+	boolean isCouponExsist(int companyID, String title) throws DaoException;
+
 }

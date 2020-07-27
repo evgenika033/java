@@ -5,6 +5,7 @@ import java.util.List;
 import beans.Company;
 import beans.Customer;
 import exceptions.DaoException;
+import utils.StringHelper;
 
 public class AdminFasade extends ClientFasade {
 
@@ -14,53 +15,54 @@ public class AdminFasade extends ClientFasade {
 	}
 
 	@Override
-	boolean login(String email, String password) throws DaoException {
+	public boolean login(String email, String password) throws DaoException {
 
-		return false;
-
-	}
-
-	public void addCompany(Company company) {
+		return email == StringHelper.ADMIN_EMAIL && password == StringHelper.ADMIN_PASSWORD;
 
 	}
 
-	public void updateCompany(Company company) {
+	public void addCompany(Company company) throws DaoException {
+		companiesDao.add(company);
+	}
+
+	public void updateCompany(Company company) throws DaoException {
+		companiesDao.update(company);
+	}
+
+	public void deleteCompany(int companyID) throws DaoException {
+		companiesDao.delete(companyID);
+	}
+
+	public List<Company> getCompanies() throws DaoException {
+		return companiesDao.getAll();
 
 	}
 
-	public void deleteCompany(int companyID) {
+	public Company getCompany(int CompanyID) throws DaoException {
+
+		return companiesDao.get(CompanyID);
 
 	}
 
-	public List<Company> getAllCompanies() {
-		return null;
+	public void addCustomer(Customer customer) throws DaoException {
+		customersDao.add(customer);
+	}
+
+	public void updateCustomer(Customer customer) throws DaoException {
+		customersDao.update(customer);
+	}
+
+	public void deleteCustomer(int customerID) throws DaoException {
+		customersDao.delete(customerID);
+	}
+
+	public List<Customer> getCustomers() throws DaoException {
+		return customersDao.getAll();
 
 	}
 
-	public List<Company> getOneCompany(int CompanyID) {
-		return null;
-
-	}
-
-	public void addCustomer(Customer customer) {
-
-	}
-
-	public void updateCustomer(Customer customer) {
-
-	}
-
-	public void deleteCustomer(int customerID) {
-
-	}
-
-	public List<Customer> getAllCustomers() {
-		return null;
-
-	}
-
-	public List<Customer> getOneCustomer(int CustomerID) {
-		return null;
+	public Customer getCustomer(int CustomerID) throws DaoException {
+		return customersDao.get(CustomerID);
 
 	}
 
