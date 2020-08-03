@@ -16,11 +16,6 @@ import utils.StringHelper;
 public class CustomersDao implements ICustomersDao<Customer> {
 
 	private Connection connection;
-	private final String table = "customers";
-	private final String UPDATE_PARAMETERS = "firstName=?,lastName=?,customerEmail=?,customerPassword=? where customerId=?";
-	private final String ADD_PARAMETERS = "?,?,?,?";
-	private final String GET_PARAMETERS = "customerId=?";
-	private final String DELETE_PARAMETERS = "customerId=?";
 
 	private void getConnection() throws DaoException {
 		try {
@@ -43,7 +38,8 @@ public class CustomersDao implements ICustomersDao<Customer> {
 	public void add(Customer addObject) throws DaoException {
 		String sql = StringHelper.SQL_ADD;// "insert into _TABLE_NAME_ values(_ADD_PARAMETERS_)";
 		// replace place_holders
-		sql = sql.replaceAll("_TABLE_NAME_", table).replaceAll("_ADD_PARAMETERS_", ADD_PARAMETERS);
+		sql = sql.replaceAll(StringHelper.TABLE_PLACE_HOLDER, StringHelper.TABLE_CUSTOMER)
+				.replaceAll("_ADD_PARAMETERS_", StringHelper.ADD_PARAMETERS_CUSTOMER);
 		System.out.println(sql);
 		getConnection();
 		try (PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
@@ -64,7 +60,8 @@ public class CustomersDao implements ICustomersDao<Customer> {
 	@Override
 	public void update(Customer updateObject) throws DaoException {
 		String sql = StringHelper.SQL_UPDATE;
-		sql = sql.replaceAll("_TABLE_NAME_", table).replaceAll("_UPDATE_PARAMETERS_", UPDATE_PARAMETERS);
+		sql = sql.replaceAll(StringHelper.TABLE_PLACE_HOLDER, StringHelper.TABLE_CUSTOMER)
+				.replaceAll("_UPDATE_PARAMETERS_", StringHelper.UPDATE_PARAMETERS_COUSTOMER);
 		System.out.println(sql);
 		getConnection();
 		try (PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
@@ -90,20 +87,16 @@ public class CustomersDao implements ICustomersDao<Customer> {
 	@Override
 	public Customer get(int id) throws DaoException {
 		String sql = StringHelper.SQL_GET;
-		sql = sql.replaceAll("_TABLE_NAME_", table).replaceAll("_GET_PARAMETERS_", GET_PARAMETERS);
+		sql = sql.replaceAll(StringHelper.TABLE_PLACE_HOLDER, StringHelper.TABLE_CUSTOMER)
+				.replaceAll("_GET_PARAMETERS_", StringHelper.GET_PARAMETERS_CUSTOMER);
 		System.out.println(sql);
 		getConnection();
 		try (PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
 			preparedStatement.setInt(1, id);
 			ResultSet resultSet = preparedStatement.executeQuery();
+			returnConnection();
 			if (resultSet.next()) {
-				int ID = resultSet.getInt("customerId");
-				String firstName = resultSet.getString("firstName");
-				String lastName = resultSet.getString("lastName");
-				String email = resultSet.getString("customerEmail");
-				String password = resultSet.getString("customerPassword");
-				returnConnection();
-				return new Customer(ID, firstName, lastName, email, password);
+				return resultToCustomer(resultSet);
 			}
 			returnConnection();
 			return null;
@@ -114,22 +107,33 @@ public class CustomersDao implements ICustomersDao<Customer> {
 
 	}
 
+	// convert resultSet to Customer
+	private Customer resultToCustomer(ResultSet resultSet) throws DaoException {
+		Customer customer = new Customer();
+		try {
+			customer.setID(resultSet.getInt("customerId"));
+			customer.setFirstName(resultSet.getString("firstName"));
+			customer.setLastName(resultSet.getString("lastName"));
+			customer.setEmail(resultSet.getString("customerEmail"));
+			customer.setPassword(resultSet.getString("customerPassword"));
+			return customer;
+		} catch (SQLException e) {
+			returnConnection();
+			throw new DaoException("get exception: ", e);
+		}
+	}
+
 	@Override
 	public List<Customer> getAll() throws DaoException {
 		List<Customer> list = new ArrayList<>();
 		String sql = StringHelper.sql_GET_ALL;
-		sql = sql.replaceAll("_TABLE_NAME_", table);
+		sql = sql.replaceAll(StringHelper.TABLE_PLACE_HOLDER, StringHelper.TABLE_CUSTOMER);
 		getConnection();
 		try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
 			// preparedStatement.setString(1, table);
 			ResultSet resultSet = preparedStatement.executeQuery();
 			while (resultSet.next()) {
-				int ID = resultSet.getInt("customerId");
-				String firstName = resultSet.getString("firstName");
-				String lastName = resultSet.getString("lastName");
-				String email = resultSet.getString("customerEmail");
-				String password = resultSet.getString("customerPassword");
-				list.add(new Customer(ID, firstName, lastName, email, password));
+				list.add(resultToCustomer(resultSet));
 			}
 			returnConnection();
 			return list;
@@ -141,9 +145,9 @@ public class CustomersDao implements ICustomersDao<Customer> {
 	}
 
 	@Override
-	public boolean isCustomerExist(String email, String password) throws DaoException {
-		String sql = "select COUNT (*)from _TABLE_NAME_ where customerEmail like ? and customerPassword like ?";
-		sql = sql.replaceAll("_TABLE_NAME_", table);
+	public Customer customerLogin(String email, String password) throws DaoException {
+		String sql = StringHelper.SQL_QUERY_GET_CUSTOMER_BY_EMAIL_AND_PASSWORD;
+		sql = sql.replaceAll(StringHelper.TABLE_PLACE_HOLDER, StringHelper.TABLE_CUSTOMER);
 		System.out.println(sql);
 		getConnection();
 		try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
@@ -151,9 +155,7 @@ public class CustomersDao implements ICustomersDao<Customer> {
 			preparedStatement.setString(2, password);
 			ResultSet resultSet = preparedStatement.executeQuery();
 			if (resultSet.next()) {
-				int counter = resultSet.getInt(1);
-				returnConnection();
-				return counter > 0;
+				return resultToCustomer(resultSet);
 			}
 		} catch (SQLException e) {
 			returnConnection();
@@ -161,14 +163,15 @@ public class CustomersDao implements ICustomersDao<Customer> {
 
 		}
 		returnConnection();
-		return false;
+		return null;
 
 	}
 
 	@Override
 	public void delete(int objectID) throws DaoException {
 		String sql = StringHelper.SQL_DELETE;
-		sql = sql.replaceAll("_TABLE_NAME_", table).replaceAll("_DELETE_PARAMETERS_", DELETE_PARAMETERS);
+		sql = sql.replaceAll(StringHelper.TABLE_PLACE_HOLDER, StringHelper.TABLE_CUSTOMER)
+				.replaceAll("_DELETE_PARAMETERS_", StringHelper.DELETE_PARAMETERS_CUSTOMER);
 		System.out.println(sql);
 		getConnection();
 		try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {

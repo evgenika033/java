@@ -4,7 +4,6 @@ import java.io.File;
 
 import beans.Category;
 import beans.Company;
-import beans.Coupon;
 import clientFasade.AdminFasade;
 import clientFasade.CompanyFacade;
 import clientFasade.CustomerFasade;
@@ -85,8 +84,8 @@ public class App {
 			// customersTest();
 			// couponsTest();
 			// customerFasadeTest();
-			// companyFacadeTest();
-			adminFacadeTest();
+			companyFacadeTest();
+			// adminFacadeTest();
 
 			System.out.println("end");
 		} else {
@@ -99,8 +98,12 @@ public class App {
 		AdminFasade adminFasade = new AdminFasade();
 		System.out.println("login success: " + adminFasade.login("admin@admin.com", "admin"));
 		System.out.println("login failed: " + adminFasade.login("admin@admin.com", "wdmin"));
-		System.out.println("try add company");
-		adminFasade.addCompany(new Company(1001, "ibm12", "email12@ibm.com", "ibm11"));
+		// System.out.println("try add company");
+		// adminFasade.addCompany(new Company(1001, "ibm122", "email122@ibm.com",
+		// "ibm11"));
+		System.out.println("try update company");
+		adminFasade.updateCompany(new Company(1001, "ibm12", "4321", "ibm14"));
+		// System.out.println("get all companies " + adminFasade.getCompanies());
 
 	}
 
@@ -108,9 +111,10 @@ public class App {
 		CompanyFacade companyFasade = new CompanyFacade(1001);
 		System.out.println("Is company exist " + companyFasade.login("4321", "999"));
 		// companyFasade.getCompanyCoupons();
-		System.out.println(companyFasade.getCompanyCoupons());
-		Coupon coupon = new Coupon(1001, Category.ACCESSORIES, "bbb", "222", null, null, 15, 20, null);
-		companyFasade.addCoupon(coupon);
+		// System.out.println(companyFasade.getCompanyCoupons());
+		// Coupon coupon = new Coupon(1001, Category.ACCESSORIES, "bbb", "222", null,
+		// null, 15, 20, null);
+		// companyFasade.addCoupon(coupon);
 		// System.out.println(" Add coupon");
 		System.out
 				.println("Get coupons of company by categories " + companyFasade.getCompanyCoupons(Category.ELECTRIC));

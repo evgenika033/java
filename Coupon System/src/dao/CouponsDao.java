@@ -1,7 +1,6 @@
 package dao;
 
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -26,10 +25,18 @@ public class CouponsDao implements ICouponsDao<Coupon> {
 		init();
 	}
 
+	/**
+	 * Initializing
+	 */
 	private void init() {
 		categoriesDao = new CategoriesDao();
 	}
 
+	/**
+	 * get connection from connectionPool
+	 * 
+	 * @throws DaoException
+	 */
 	private void getConnection() throws DaoException {
 		try {
 			connection = ConnectionPool.getInstance().getConnection();
@@ -38,6 +45,11 @@ public class CouponsDao implements ICouponsDao<Coupon> {
 		}
 	}
 
+	/**
+	 * return connection to connectionPool
+	 * 
+	 * @throws DaoException
+	 */
 	private void returnConnection() throws DaoException {
 		try {
 			ConnectionPool.getInstance().returnConnection(connection);
@@ -53,23 +65,12 @@ public class CouponsDao implements ICouponsDao<Coupon> {
 		// replace place_holders
 		sql = sql.replaceAll(StringHelper.TABLE_PLACE_HOLDER, StringHelper.TABLE_COUPON)
 				.replaceAll(StringHelper.PARAMETERS_ADD_PLACE_HOLDER, StringHelper.ADD_PARAMETERS_COUPON);
-
-		if (!isCouponExsist(addObject.getCompanyID(), addObject.getTitle())) {
+		if (isCouponValid(addObject.getCompanyID(), addObject.getTitle())) {
 			getConnection();
-
 			// continue add coupon
 			try (PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
 				System.out.println(sql);
-				preparedStatement.setInt(1, addObject.getCompanyID());
-				int categoryId = categoriesDao.get(addObject.getCategory().name().toUpperCase());
-				preparedStatement.setInt(2, categoryId);
-				preparedStatement.setString(3, addObject.getTitle());
-				preparedStatement.setString(4, addObject.getDescription());
-				preparedStatement.setDate(5, addObject.getStartDate());
-				preparedStatement.setDate(6, addObject.getEndDate());
-				preparedStatement.setInt(7, addObject.getAmount());
-				preparedStatement.setDouble(8, addObject.getPrice());
-				preparedStatement.setString(9, addObject.getImage());
+				couponToStatement(preparedStatement, addObject, true);
 				preparedStatement.executeUpdate();
 				returnConnection();
 				System.out.println("inserted");
@@ -77,6 +78,48 @@ public class CouponsDao implements ICouponsDao<Coupon> {
 				returnConnection();
 				throw new DaoException(StringHelper.EXCEPTION_INSERT, e);
 			}
+		}
+	}
+
+	/**
+	 * convert preparedStatement values from coupon
+	 * 
+	 * @param preparedStatement
+	 * @param coupon
+	 * @param isAdd
+	 * @throws DaoException
+	 */
+	private void couponToStatement(PreparedStatement preparedStatement, Coupon coupon, boolean isAdd)
+			throws DaoException {
+		try {
+			if (isAdd) {
+				// for new coupon
+				preparedStatement.setInt(1, coupon.getCompanyID());
+				int categoryId = categoriesDao.get(coupon.getCategory().name().toUpperCase());
+				preparedStatement.setInt(2, categoryId);
+				preparedStatement.setString(3, coupon.getTitle());
+				preparedStatement.setString(4, coupon.getDescription());
+				preparedStatement.setDate(5, coupon.getStartDate());
+				preparedStatement.setDate(6, coupon.getEndDate());
+				preparedStatement.setInt(7, coupon.getAmount());
+				preparedStatement.setDouble(8, coupon.getPrice());
+				preparedStatement.setString(9, coupon.getImage());
+			} else {
+				// for update coupon
+				int categoryId = categoriesDao.get(coupon.getCategory().toString().toUpperCase());
+				preparedStatement.setInt(2, categoryId);
+				preparedStatement.setString(3, coupon.getTitle());
+				preparedStatement.setString(4, coupon.getDescription());
+				preparedStatement.setDate(5, coupon.getStartDate());
+				preparedStatement.setDate(6, coupon.getEndDate());
+				preparedStatement.setInt(7, coupon.getAmount());
+				preparedStatement.setDouble(8, coupon.getPrice());
+				preparedStatement.setString(9, coupon.getImage());
+				preparedStatement.setInt(10, coupon.getID());
+			}
+		} catch (SQLException e) {
+			returnConnection();
+			throw new DaoException(StringHelper.EXCEPTION_INSERT, e);
 		}
 
 	}
@@ -87,19 +130,15 @@ public class CouponsDao implements ICouponsDao<Coupon> {
 		sql = sql.replaceAll(StringHelper.TABLE_PLACE_HOLDER, StringHelper.TABLE_COUPON)
 				.replaceAll(StringHelper.PARAMETERS_UPDATE_PLACE_HOLDER, StringHelper.UPDATE_PARAMETERS_COUPON);
 		System.out.println(sql);
-		getConnection();
+		Coupon couponDB = get(updateObject.getID());
+		isCouponValidate(couponDB);
+		updateObject.setCompanyID(couponDB.getCompanyID());
+		updateObject.setTitle(couponDB.getTitle());
+		if (isCouponValid(updateObject.getCompanyID(), updateObject.getTitle()))
+			getConnection();
 		try (PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
 			preparedStatement.setInt(1, updateObject.getCompanyID());
-			int categoryId = categoriesDao.get(updateObject.getCategory().toString().toUpperCase());
-			preparedStatement.setInt(2, categoryId);
-			preparedStatement.setString(3, updateObject.getTitle());
-			preparedStatement.setString(4, updateObject.getDescription());
-			preparedStatement.setDate(5, updateObject.getStartDate());
-			preparedStatement.setDate(6, updateObject.getEndDate());
-			preparedStatement.setInt(7, updateObject.getAmount());
-			preparedStatement.setDouble(8, updateObject.getPrice());
-			preparedStatement.setString(9, updateObject.getImage());
-			preparedStatement.setInt(10, updateObject.getID());
+
 			int result = preparedStatement.executeUpdate();
 			returnConnection();
 			if (result > 0) {
@@ -110,6 +149,18 @@ public class CouponsDao implements ICouponsDao<Coupon> {
 		} catch (SQLException e) {
 			returnConnection();
 			throw new DaoException(StringHelper.EXCEPTION_UPDATE, e);
+		}
+	}
+
+	/**
+	 * validate coupon for null
+	 * 
+	 * @param coupon
+	 * @throws DaoException
+	 */
+	private void isCouponValidate(Coupon coupon) throws DaoException {
+		if (coupon == null) {
+			throw new DaoException(StringHelper.EXCEPTION_COUPON_NOT_FOUND);
 		}
 
 	}
@@ -123,23 +174,9 @@ public class CouponsDao implements ICouponsDao<Coupon> {
 		try (PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
 			preparedStatement.setInt(1, id);
 			ResultSet resultSet = preparedStatement.executeQuery();
+			returnConnection();
 			if (resultSet.next()) {
-				int ID = resultSet.getInt("couponId");
-				int companyID = resultSet.getInt("companyId");
-				int categoryId = resultSet.getInt("categoryId");
-				String categoryName = categoriesDao.get(categoryId);
-				Category category = Category.valueOf(categoryName);
-				String title = resultSet.getString("title");
-				String description = resultSet.getString("description");
-				Date startDate = resultSet.getDate("startDate");
-				Date endDate = resultSet.getDate("endDate");
-				int amount = resultSet.getInt("amount");
-				double price = resultSet.getDouble("price");
-				String image = resultSet.getString("image");
-
-				returnConnection();
-				return new Coupon(ID, companyID, category, title, description, startDate, endDate, amount, price,
-						image);
+				return resultToCoupon(resultSet);
 			}
 			return null;
 		} catch (SQLException e) {
@@ -156,27 +193,11 @@ public class CouponsDao implements ICouponsDao<Coupon> {
 		sql = sql.replaceAll(StringHelper.TABLE_PLACE_HOLDER, StringHelper.TABLE_COUPON);
 		getConnection();
 		try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-			// preparedStatement.setString(1, table);
 			ResultSet resultSet = preparedStatement.executeQuery();
-			while (resultSet.next()) {
-				int ID = resultSet.getInt("couponId");
-				int companyID = resultSet.getInt("companyId");
-				int categoryId = resultSet.getInt("categoryId");
-				String categoryName = categoriesDao.get(categoryId);
-				Category category = Category.valueOf(categoryName);
-				String title = resultSet.getString("title");
-				String description = resultSet.getString("description");
-				Date startDate = resultSet.getDate("startDate");
-				Date endDate = resultSet.getDate("endDate");
-
-				int amount = resultSet.getInt("amount");
-				double price = resultSet.getDouble("price");
-				String image = resultSet.getString("image");
-				// Coupon coupon=
-				list.add(new Coupon(ID, companyID, category, title, description, startDate, endDate, amount, price,
-						image));
-			}
 			returnConnection();
+			while (resultSet.next()) {
+				list.add(resultToCoupon(resultSet));
+			}
 			return list;
 		} catch (SQLException e) {
 			returnConnection();
@@ -191,16 +212,40 @@ public class CouponsDao implements ICouponsDao<Coupon> {
 		sql = sql.replaceAll(StringHelper.TABLE_PLACE_HOLDER, StringHelper.TABLE_CUSTVSCOUPONS)
 				.replaceAll(StringHelper.PARAMETERS_ADD_PLACE_HOLDER, StringHelper.ADD_PARAMETERS_CUSTVSCOUPONS_COUPON);
 		System.out.println(sql);
+		if (isPurchaseCouponAmountValid(couponID) && isPurchaseCouponCustomerValid(couponID, customerID)) {
+			Coupon coupon = get(couponID);
+			coupon.setAmount(coupon.getAmount() - 1);
+			update(coupon);
+			getConnection();
+			try (PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
+				preparedStatement.setInt(1, customerID);
+				preparedStatement.setInt(2, couponID);
+				preparedStatement.executeUpdate();
+				returnConnection();
+				System.out.println("inserted");
+			} catch (SQLException e) {
+				returnConnection();
+				throw new DaoException(StringHelper.EXCEPTION_INSERT, e);
+			}
+		}
+
+	}
+
+	@Override
+	public void deleteCouponsPurchase(int couponID) throws DaoException {
+		String sql = StringHelper.SQL_DELETE;
+		sql = sql.replaceAll(StringHelper.TABLE_PLACE_HOLDER, StringHelper.TABLE_CUSTVSCOUPONS)
+				.replaceAll(StringHelper.PARAMETERS_DELETE_PLACE_HOLDER, StringHelper.DELETE_PARAMETERS_COUPON);
+		System.out.println(sql);
 		getConnection();
-		try (PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
-			preparedStatement.setInt(1, customerID);
-			preparedStatement.setInt(2, couponID);
-			preparedStatement.executeUpdate();
+		try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+			preparedStatement.setInt(1, couponID);
+			int result = preparedStatement.executeUpdate();
 			returnConnection();
-			System.out.println("inserted");
+			System.out.println("delete all coupons Purchase: " + result);
 		} catch (SQLException e) {
 			returnConnection();
-			throw new DaoException(StringHelper.EXCEPTION_INSERT, e);
+			throw new DaoException(StringHelper.EXCEPTION_DELETE, e);
 		}
 
 	}
@@ -233,7 +278,7 @@ public class CouponsDao implements ICouponsDao<Coupon> {
 		sql = sql.replaceAll(StringHelper.TABLE_PLACE_HOLDER, StringHelper.TABLE_COUPON)
 				.replaceAll(StringHelper.PARAMETERS_DELETE_PLACE_HOLDER, StringHelper.DELETE_PARAMETERS_COUPON);
 		System.out.println(sql);
-
+		deleteCouponsPurchase(objectID);
 		getConnection();
 		// get statement
 		try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
@@ -265,13 +310,11 @@ public class CouponsDao implements ICouponsDao<Coupon> {
 			preparedStatement.setInt(1, customerID);
 			// execute query
 			ResultSet resultSet = preparedStatement.executeQuery();
+			returnConnection();
 			while (resultSet.next()) {
 				int ID = resultSet.getInt("couponId");
 				coupons.add(get(ID));
 			}
-
-			returnConnection();
-
 		} catch (SQLException e) {
 			returnConnection();
 			throw new DaoException(StringHelper.EXCEPTION_GET, e);
@@ -294,32 +337,15 @@ public class CouponsDao implements ICouponsDao<Coupon> {
 				preparedStatement.setInt(2, categoryId);
 				// execute query
 				ResultSet resultSet = preparedStatement.executeQuery();
-				while (resultSet.next()) {
-					int ID = resultSet.getInt("couponId");
-					int companyID = resultSet.getInt("companyId");
-					categoryId = resultSet.getInt("categoryId");
-					String categoryName = categoriesDao.get(categoryId);
-					category = Category.valueOf(categoryName);
-					String title = resultSet.getString("title");
-					String description = resultSet.getString("description");
-					Date startDate = resultSet.getDate("startDate");
-					Date endDate = resultSet.getDate("endDate");
-					int amount = resultSet.getInt("amount");
-					double price = resultSet.getDouble("price");
-					String image = resultSet.getString("image");
-					coupons.add(new Coupon(ID, companyID, category, title, description, startDate, endDate, amount,
-							price, image));
-
-				}
-
 				returnConnection();
-
+				while (resultSet.next()) {
+					coupons.add(resultToCoupon(resultSet));
+				}
 			} catch (SQLException e) {
 				returnConnection();
 				throw new DaoException(StringHelper.EXCEPTION_GET, e);
 			}
 			return coupons;
-
 		}
 
 	}
@@ -336,26 +362,10 @@ public class CouponsDao implements ICouponsDao<Coupon> {
 			preparedStatement.setDouble(2, maxPrice);
 			// execute query
 			ResultSet resultSet = preparedStatement.executeQuery();
-			while (resultSet.next()) {
-				int ID = resultSet.getInt("couponId");
-				int companyID = resultSet.getInt("companyId");
-				int categoryId = resultSet.getInt("categoryId");
-				String categoryName = categoriesDao.get(categoryId);
-				Category category = Category.valueOf(categoryName);
-				String title = resultSet.getString("title");
-				String description = resultSet.getString("description");
-				Date startDate = resultSet.getDate("startDate");
-				Date endDate = resultSet.getDate("endDate");
-				int amount = resultSet.getInt("amount");
-				double price = resultSet.getDouble("price");
-				String image = resultSet.getString("image");
-				coupons.add(new Coupon(ID, companyID, category, title, description, startDate, endDate, amount, price,
-						image));
-
-			}
-
 			returnConnection();
-
+			while (resultSet.next()) {
+				coupons.add(resultToCoupon(resultSet));
+			}
 		} catch (SQLException e) {
 			returnConnection();
 			throw new DaoException(StringHelper.EXCEPTION_GET, e);
@@ -377,27 +387,10 @@ public class CouponsDao implements ICouponsDao<Coupon> {
 			preparedStatement.setInt(1, companyID);
 			// execute query
 			ResultSet resultSet = preparedStatement.executeQuery();
-			while (resultSet.next()) {
-				int ID = resultSet.getInt("couponId");
-				companyID = resultSet.getInt("companyId");
-				int categoryId = resultSet.getInt("categoryId");
-				String categoryName = categoriesDao.get(categoryId);
-				Category category = Category.valueOf(categoryName);
-				String title = resultSet.getString("title");
-				String description = resultSet.getString("description");
-				Date startDate = resultSet.getDate("startDate");
-				Date endDate = resultSet.getDate("endDate");
-
-				int amount = resultSet.getInt("amount");
-				double price = resultSet.getDouble("price");
-				String image = resultSet.getString("image");
-				// Coupon coupon=
-				coupons.add(new Coupon(ID, companyID, category, title, description, startDate, endDate, amount, price,
-						image));
-			}
-
 			returnConnection();
-
+			while (resultSet.next()) {
+				coupons.add(resultToCoupon(resultSet));
+			}
 		} catch (SQLException e) {
 			returnConnection();
 			throw new DaoException(StringHelper.EXCEPTION_GET, e);
@@ -421,25 +414,10 @@ public class CouponsDao implements ICouponsDao<Coupon> {
 			preparedStatement.setInt(2, categoryId);
 			// execute query
 			ResultSet resultSet = preparedStatement.executeQuery();
-			while (resultSet.next()) {
-				int ID = resultSet.getInt("couponId");
-				companyID = resultSet.getInt("companyId");
-				categoryId = resultSet.getInt("categoryId");
-				String categoryName = categoriesDao.get(categoryId);
-				category = Category.valueOf(categoryName);
-				String title = resultSet.getString("title");
-				String description = resultSet.getString("description");
-				Date startDate = resultSet.getDate("startDate");
-				Date endDate = resultSet.getDate("endDate");
-				int amount = resultSet.getInt("amount");
-				double price = resultSet.getDouble("price");
-				String image = resultSet.getString("image");
-				coupons.add(new Coupon(ID, companyID, category, title, description, startDate, endDate, amount, price,
-						image));
-			}
-
 			returnConnection();
-
+			while (resultSet.next()) {
+				coupons.add(resultToCoupon(resultSet));
+			}
 		} catch (SQLException e) {
 			returnConnection();
 			throw new DaoException(StringHelper.EXCEPTION_GET, e);
@@ -462,23 +440,10 @@ public class CouponsDao implements ICouponsDao<Coupon> {
 			preparedStatement.setDouble(2, maxPrice);
 			// execute query
 			ResultSet resultSet = preparedStatement.executeQuery();
-			while (resultSet.next()) {
-				int ID = resultSet.getInt("couponId");
-				companyID = resultSet.getInt("companyId");
-				int categoryId = resultSet.getInt("categoryId");
-				String categoryName = categoriesDao.get(categoryId);
-				Category category = Category.valueOf(categoryName);
-				String title = resultSet.getString("title");
-				String description = resultSet.getString("description");
-				Date startDate = resultSet.getDate("startDate");
-				Date endDate = resultSet.getDate("endDate");
-				int amount = resultSet.getInt("amount");
-				double price = resultSet.getDouble("price");
-				String image = resultSet.getString("image");
-				coupons.add(new Coupon(ID, companyID, category, title, description, startDate, endDate, amount, price,
-						image));
-			}
 			returnConnection();
+			while (resultSet.next()) {
+				coupons.add(resultToCoupon(resultSet));
+			}
 
 		} catch (SQLException e) {
 			returnConnection();
@@ -488,8 +453,38 @@ public class CouponsDao implements ICouponsDao<Coupon> {
 
 	}
 
+	/**
+	 * convert coupon from resultSet
+	 * 
+	 * @param resultSet
+	 * @return
+	 * @throws DaoException
+	 */
+	private Coupon resultToCoupon(ResultSet resultSet) throws DaoException {
+		Coupon coupon = new Coupon();
+		try {
+			coupon.setID(resultSet.getInt("couponId"));
+			coupon.setCompanyID(resultSet.getInt("companyId"));
+			int categoryId = resultSet.getInt("categoryId");
+			String categoryName = categoriesDao.get(categoryId);
+			coupon.setCategory(Category.valueOf(categoryName));
+			coupon.setTitle(resultSet.getString("title"));
+			coupon.setDescription(resultSet.getString("description"));
+			coupon.setStartDate(resultSet.getDate("startDate"));
+			coupon.setEndDate(resultSet.getDate("endDate"));
+			coupon.setAmount(resultSet.getInt("amount"));
+			coupon.setPrice(resultSet.getDouble("price"));
+			coupon.setImage(resultSet.getString("image"));
+			return coupon;
+		} catch (SQLException e) {
+			returnConnection();
+			throw new DaoException(StringHelper.EXCEPTION_GET, e);
+		}
+
+	}
+
 	@Override
-	public boolean isCouponExsist(int companyID, String title) throws DaoException {
+	public boolean isCouponValid(int companyID, String title) throws DaoException {
 		String sql = StringHelper.SQL_QUERY_GET_COUPONS_OF_COMPANY_BY_TITLE;
 		System.out.println(sql);
 		getConnection();
@@ -498,9 +493,9 @@ public class CouponsDao implements ICouponsDao<Coupon> {
 			preparedStatement.setInt(1, companyID);
 			preparedStatement.setString(2, title);
 			ResultSet resultSet = preparedStatement.executeQuery();
+			returnConnection();
 			if (resultSet.next()) {
 				if (resultSet.getInt(1) > 0) {
-					returnConnection();
 					throw new DaoException(StringHelper.EXCEPTION_COUPON_ADD_ALREADY_EXIST);
 				}
 			}
@@ -508,7 +503,39 @@ public class CouponsDao implements ICouponsDao<Coupon> {
 			returnConnection();
 			throw new DaoException(StringHelper.EXCEPTION_GET, e);
 		}
-		return false;
+		return true;
+	}
+
+	@Override
+	public boolean isPurchaseCouponAmountValid(int couponID) throws DaoException {
+		Coupon coupon = get(couponID);
+		isCouponValidate(coupon);
+		if (coupon.getAmount() < 1) {
+			throw new DaoException(StringHelper.EXCEPTION_COUPON_AMOUNT_EMPTY);
+		}
+		return true;
+	}
+
+	@Override
+	public boolean isPurchaseCouponCustomerValid(int couponID, int customerID) throws DaoException {
+		String sql = StringHelper.SQL_QUERY_GET_COUNT_OF_COUPONS_BY_COUPONID_AND_CUSTOMERID;
+		System.out.println(sql);
+		getConnection();
+		try (PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
+			preparedStatement.setInt(1, customerID);
+			preparedStatement.setInt(2, couponID);
+			ResultSet resultSet = preparedStatement.executeQuery();
+			returnConnection();
+			if (resultSet.next()) {
+				if (resultSet.getInt(1) > 0) {
+					throw new DaoException(StringHelper.EXCEPTION_COUPON_PURCHASE_ALREADY_EXIST_IN_CUSTOMER);
+				}
+			}
+		} catch (SQLException e) {
+			returnConnection();
+			throw new DaoException(StringHelper.EXCEPTION_GET, e);
+		}
+		return true;
 	}
 
 }

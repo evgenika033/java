@@ -10,5 +10,13 @@ public abstract class ClientFasade {
 	protected CustomersDao customersDao = new CustomersDao();
 	protected CouponsDao couponsDao = new CouponsDao();
 
+	/**
+	 * login
+	 * 
+	 * @param email
+	 * @param password
+	 * @return
+	 * @throws DaoException
+	 */
 	public abstract boolean login(String email, String password) throws DaoException;
 }

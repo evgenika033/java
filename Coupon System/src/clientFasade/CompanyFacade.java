@@ -11,6 +11,10 @@ public class CompanyFacade extends ClientFasade {
 
 	private int companyID;
 
+	public CompanyFacade() {
+		// TODO Auto-generated constructor stub
+	}
+
 	public CompanyFacade(int companyID) {
 		super();
 		this.companyID = companyID;
@@ -18,7 +22,12 @@ public class CompanyFacade extends ClientFasade {
 
 	@Override
 	public boolean login(String email, String password) throws DaoException {
-		return companiesDao.isCompanyExist(email, password);
+		Company company = companiesDao.companyLogin(email, password);
+		if (company != null) {
+			companyID = company.getID();
+			return true;
+		}
+		return false;
 	}
 
 	public void addCoupon(Coupon coupon) throws DaoException {
@@ -49,7 +58,9 @@ public class CompanyFacade extends ClientFasade {
 	}
 
 	public Company getCompanyDetails() throws DaoException {
-		return companiesDao.get(companyID);
+		Company company = companiesDao.get(companyID);
+		company.setCoupons(getCompanyCoupons());
+		return company;
 
 	}
 

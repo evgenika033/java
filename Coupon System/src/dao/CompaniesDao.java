@@ -35,17 +35,17 @@ public class CompaniesDao implements ICompaniesDao<Company> {
 
 	@Override
 	public void add(Company addObject) throws DaoException {
-		String sql = StringHelper.SQL_ADD;// "insert into _TABLE_NAME_ values(_ADD_PARAMETERS_)";
+		String sql = StringHelper.SQL_ADD;
 		// replace place_holders
 		sql = sql.replaceAll(StringHelper.TABLE_PLACE_HOLDER, StringHelper.TABLE_COMPANIES)
 				.replaceAll(StringHelper.PARAMETERS_ADD_PLACE_HOLDER, StringHelper.ADD_PARAMETERS_COMPANIES);
-		if (!isCompanyExistByNameOrEmail(addObject.getName(), addObject.getEmail())) {
+		// доказательство того, что требования конкретного пользователя, продукта,
+		// услуги или системы удовлетворены
+		if (isCompanyValid(addObject.getName(), addObject.getEmail())) {
 			System.out.println(sql);
 			getConnection();
 			try (PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
-				preparedStatement.setString(1, addObject.getName());
-				preparedStatement.setString(2, addObject.getEmail());
-				preparedStatement.setString(3, addObject.getPassword());
+				companyToStatement(preparedStatement, addObject, true);
 				preparedStatement.executeUpdate();
 				System.out.println("inserted");
 				returnConnection();
@@ -57,31 +57,62 @@ public class CompaniesDao implements ICompaniesDao<Company> {
 
 	}
 
+	// convert company to statement
+	private void companyToStatement(PreparedStatement preparedStatement, Company company, boolean isAdd)
+			throws DaoException {
+		try {
+			if (isAdd) {
+				// for new company
+				preparedStatement.setString(1, company.getName());
+				preparedStatement.setString(2, company.getEmail());
+				preparedStatement.setString(3, company.getPassword());
+			} else {
+				// for update company
+				preparedStatement.setString(1, company.getName());
+				preparedStatement.setString(2, company.getEmail());
+				preparedStatement.setString(3, company.getPassword());
+				preparedStatement.setInt(4, company.getID());
+			}
+		} catch (SQLException e) {
+			returnConnection();
+			throw new DaoException(StringHelper.EXCEPTION_INSERT, e);
+		}
+
+	}
+
 	@Override
 	public void update(Company updateObject) throws DaoException {
 		String sql = StringHelper.SQL_UPDATE;
 		sql = sql.replaceAll(StringHelper.TABLE_PLACE_HOLDER, StringHelper.TABLE_COMPANIES)
 				.replaceAll(StringHelper.PARAMETERS_UPDATE_PLACE_HOLDER, StringHelper.UPDATE_PARAMETERS_COMPANIES);
 		System.out.println(sql);
-		getConnection();
-		try (PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
-			preparedStatement.setString(1, updateObject.getName());
-			preparedStatement.setString(2, updateObject.getEmail());
-			preparedStatement.setString(3, updateObject.getPassword());
-			preparedStatement.setInt(4, updateObject.getID());
-			int result = preparedStatement.executeUpdate();
-			returnConnection();
-			// TODO need to remove
-			if (result > 0) {
-				System.out.println("updated true");
-			} else {
-				System.out.println("updated false");
+		Company companyDB = get(updateObject.getID());
+		companyCheck(companyDB);
+		updateObject.setName(companyDB.getName());
+		if (isCompanyValid(updateObject.getEmail(), updateObject.getID())) {
+			getConnection();
+			try (PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
+				companyToStatement(preparedStatement, updateObject, false);
+				int result = preparedStatement.executeUpdate();
+				returnConnection();
+				if (result > 0) {
+					System.out.println("updated true");
+				} else {
+					System.out.println("updated false");
+				}
+			} catch (SQLException e) {
+				returnConnection();
+				throw new DaoException(StringHelper.EXCEPTION_UPDATE, e);
 			}
-		} catch (SQLException e) {
-			returnConnection();
-			throw new DaoException(StringHelper.EXCEPTION_UPDATE, e);
+
 		}
 
+	}
+
+	private void companyCheck(Company company) throws DaoException {
+		if (company == null) {
+			throw new DaoException(StringHelper.EXCEPTION_COMPANY_NOT_FOUND);
+		}
 	}
 
 	@Override
@@ -93,16 +124,28 @@ public class CompaniesDao implements ICompaniesDao<Company> {
 		try (PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
 			preparedStatement.setInt(1, id);
 			ResultSet resultSet = preparedStatement.executeQuery();
-			if (resultSet.next()) {
-				int ID = resultSet.getInt("companyId");
-				String name = resultSet.getString("companyName");
-				String email = resultSet.getString("companyEmail");
-				String password = resultSet.getString("companyPassword");
-				returnConnection();
-				return new Company(ID, name, email, password);
-			}
 			returnConnection();
+			if (resultSet.next()) {
+				return resultToCompany(resultSet);
+			}
 			return null;
+		} catch (SQLException e) {
+			returnConnection();
+			throw new DaoException(StringHelper.EXCEPTION_GET, e);
+		}
+
+	}
+
+	// set company from resultSet
+	private Company resultToCompany(ResultSet resultSet) throws DaoException {
+		Company company = null;
+		try {
+			company = new Company();
+			company.setID(resultSet.getInt("companyId"));
+			company.setName(resultSet.getString("companyName"));
+			company.setEmail(resultSet.getString("companyEmail"));
+			company.setPassword(resultSet.getString("companyPassword"));
+			return company;
 		} catch (SQLException e) {
 			returnConnection();
 			throw new DaoException(StringHelper.EXCEPTION_GET, e);
@@ -119,14 +162,11 @@ public class CompaniesDao implements ICompaniesDao<Company> {
 		try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
 			// preparedStatement.setString(1, table);
 			ResultSet resultSet = preparedStatement.executeQuery();
-			while (resultSet.next()) {
-				int ID = resultSet.getInt("companyId");
-				String name = resultSet.getString("companyName");
-				String email = resultSet.getString("companyEmail");
-				String password = resultSet.getString("companyPassword");
-				list.add(new Company(ID, name, email, password));
-			}
 			returnConnection();
+			while (resultSet.next()) {
+				list.add(resultToCompany(resultSet));
+			}
+
 			return list;
 		} catch (SQLException e) {
 			returnConnection();
@@ -136,8 +176,8 @@ public class CompaniesDao implements ICompaniesDao<Company> {
 	}
 
 	@Override
-	public boolean isCompanyExist(String email, String password) throws DaoException {
-		String sql = StringHelper.SQL_QUERY_COMPANY_COUNT;
+	public Company companyLogin(String email, String password) throws DaoException {
+		String sql = StringHelper.SQL_QUERY_COMPANY_BY_EMAIL_AND_PASSWORD;
 		sql = sql.replaceAll(StringHelper.TABLE_PLACE_HOLDER, StringHelper.TABLE_COMPANIES);
 		System.out.println(sql);
 		getConnection();
@@ -146,16 +186,13 @@ public class CompaniesDao implements ICompaniesDao<Company> {
 			preparedStatement.setString(2, password);
 			ResultSet resultSet = preparedStatement.executeQuery();
 			if (resultSet.next()) {
-				int counter = resultSet.getInt(1);
-				returnConnection();
-				return counter > 0;
+				return resultToCompany(resultSet);
 			}
+			return null;
 		} catch (SQLException e) {
 			returnConnection();
 			throw new DaoException(StringHelper.EXCEPTION_GET_ALL, e);
 		}
-
-		return false;
 	}
 
 	@Override
@@ -177,7 +214,7 @@ public class CompaniesDao implements ICompaniesDao<Company> {
 	}
 
 	@Override
-	public boolean isCompanyExistByNameOrEmail(String companyName, String companyEmail) throws DaoException {
+	public boolean isCompanyValid(String companyName, String companyEmail) throws DaoException {
 		String sql = StringHelper.SQL_QUERY_GET_COMPANY_BY_NAME_OR_EMAIL;
 		System.out.println(sql);
 		getConnection();
@@ -196,7 +233,31 @@ public class CompaniesDao implements ICompaniesDao<Company> {
 			throw new DaoException(StringHelper.EXCEPTION_GET, e);
 		}
 		returnConnection();
-		return false;
+		return true;
+	}
+
+	@Override
+	public boolean isCompanyValid(String companyEmail, int companyID) throws DaoException {
+		String sql = StringHelper.SQL_QUERY_GET_COMPANY_BY_EMAIL_AND_ID;
+		System.out.println(sql);
+		getConnection();
+		try (PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
+			preparedStatement.setString(1, companyEmail);
+			preparedStatement.setInt(2, companyID);
+			ResultSet resultSet = preparedStatement.executeQuery();
+			if (resultSet.next()) {
+				if (resultSet.getInt(1) > 0) {
+					returnConnection();
+					throw new DaoException(StringHelper.EXCEPTION_COMPANY_UPDATE_ALREADY_EXIST);
+				}
+			}
+		} catch (SQLException e) {
+			returnConnection();
+			throw new DaoException(StringHelper.EXCEPTION_GET, e);
+		}
+		returnConnection();
+		return true;
+
 	}
 
 }

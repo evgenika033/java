@@ -71,12 +71,17 @@ public class StringHelper {
 
 	public static final String SQL_QUERY_GET_COUPONS_OF_CUSTOMER_BY_PRICE = "select c.couponId,c.companyId,c.categoryId,c.title, c.description, c.startDate,c.endDate,c.amount,c.price,c.image from customersVSCoupons as cc join coupons as c on cc.couponId=c.couponId where customerId=? and price <= ?";
 	public static final String SQL_QUERY_GET_COUPONS_OF_CUSTOMER_BY_CATEGORY = "select c.couponId,c.companyId,c.categoryId,c.title, c.description, c.startDate,c.endDate,c.amount,c.price,c.image from customersVSCoupons as cc join coupons as c on cc.couponId=c.couponId where customerId=? and  categoryId=?";
-	public static final String SQL_QUERY_COMPANY_COUNT = "select COUNT (*) from _TABLE_NAME_ where companyEmail like ? and companyPassword like ?";
+	public static final String SQL_QUERY_GET_COUNT_OF_COUPONS_BY_COUPONID_AND_CUSTOMERID = "select count(*) from customersVSCoupons as  where customerId=? and  couponId=?";
+	public static final String SQL_QUERY_COMPANY_BY_EMAIL_AND_PASSWORD = "select * from _TABLE_NAME_ where companyEmail like ? and companyPassword like ?";
 	public static final String SQL_QUERY_CATEGORY_BY_ID = "select categoryName from categories where categoryId=?";
 	public static final String SQL_QUERY_CATEGORY_BY_NAME = "select categoryId from categories where categoryName like ?";
 	public static final String SQL_QUERY_GET_COUPONS_OF_COMPANY_BY_TITLE = "select count (*) from coupons where  companyId=? and title like ?";
 	public static final String SQL_QUERY_GET_COMPANY_BY_NAME_OR_EMAIL = "select count(*) from companies where companyName like ? or companyEmail like ?";
+	public static final String SQL_QUERY_GET_COMPANY_BY_EMAIL_AND_ID = "select count(*) from companies where companyEmail like ? and companyId !=?";
+	public static final String SQL_QUERY_GET_CUSTOMER_BY_EMAIL_AND_PASSWORD = "select * from _TABLE_NAME_ where customerEmail like ? and customerPassword like ?";
 	// section of sql queries and parameters for special DAO's
+
+	// coupons + couponsVScustomers
 	public static final String TABLE_COUPON = "coupons";
 	public static final String TABLE_CUSTVSCOUPONS = "customersVSCoupons";
 	public static final String UPDATE_PARAMETERS_COUPON = "companyId=?,categoryId=?,title=?,description=?,startDate=?,endDate=?,amount=?,price=?,image=? where couponId=?";
@@ -87,10 +92,11 @@ public class StringHelper {
 	public static final String GET_PARAMETERS_COUPONS_OF_COMPANY = "companyId=?";
 	public static final String GET_PARAMETERS_COUPONS_OF_COMPANY__BY_CATEGORY = "companyId=? and categoryId=?";
 	public static final String GET_PARAMETERS_COUPONS_OF_COMPANY_BY_PRICE = "companyId=? and price=?";
-
 	public static final String DELETE_PARAMETERS_COUPON = "couponId=?";
 	public static final String DELETE_PARAMETERS_CUSTVSCOUPONS = "customerId=? and couponId=?";
 	public static final String TABLE_PLACE_HOLDER = "_TABLE_NAME_";
+
+	// companies
 	public static final String TABLE_COMPANIES = "companies";
 	public static final String PARAMETERS_UPDATE_PLACE_HOLDER = "_UPDATE_PARAMETERS_";
 	public static final String PARAMETERS_ADD_PLACE_HOLDER = "_ADD_PARAMETERS_";
@@ -101,16 +107,29 @@ public class StringHelper {
 	public static final String GET_PARAMETERS_COMPANIES = "companyId=?";
 	public static final String DELETE_PARAMETERS_COMPANIES = "companyId=?";
 
+	// customer
+	public static final String TABLE_CUSTOMER = "customers";
+	public static final String UPDATE_PARAMETERS_COUSTOMER = "firstName=?,lastName=?,customerEmail=?,customerPassword=? where customerId=?";
+	public static final String ADD_PARAMETERS_CUSTOMER = "?,?,?,?";
+	public static final String GET_PARAMETERS_CUSTOMER = "customerId=?";
+	public static final String DELETE_PARAMETERS_CUSTOMER = "customerId=?";
+
 	// section exception
 	public static final String EXCEPTION_GET = "get exception: ";
 	public static final String EXCEPTION_GET_ALL = "getAll exception: ";
 	public static final String EXCEPTION_DELETE = "delete exception: ";
 	public static final String EXCEPTION_INSERT = "insert exception: ";
 	public static final String EXCEPTION_UPDATE = "updated exception: ";
-	public static final String EXCEPTION_COUPON_ADD_ALREADY_EXIST = "Coupon with some title is already exist  in current company";
-	public static final String EXCEPTION_COMPANY_ADD_ALREADY_EXIST = "Company with some name or email address is already exist";
+	public static final String EXCEPTION_COUPON_ADD_ALREADY_EXIST = "Coupon with same title is already exist  in current company";
+	public static final String EXCEPTION_COUPON_PURCHASE_ALREADY_EXIST_IN_CUSTOMER = "this coupon was bought by current customer";
+	public static final String EXCEPTION_COMPANY_ADD_ALREADY_EXIST = "Company with same name or email address is already exist";
+	public static final String EXCEPTION_COMPANY_UPDATE_ALREADY_EXIST = "Other company with same email address is already exist";
+	public static final String EXCEPTION_COMPANY_NOT_FOUND = "not found company by ID";
+	public static final String EXCEPTION_COUPON_NOT_FOUND = "not found coupon by ID";
+	public static final String EXCEPTION_COUPON_AMOUNT_EMPTY = "coupon amount is empty";
 
 	// other
 	public static final String ADMIN_EMAIL = "admin@admin.com";
 	public static final String ADMIN_PASSWORD = "admin";
+
 }

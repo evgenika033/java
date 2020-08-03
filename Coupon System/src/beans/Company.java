@@ -72,7 +72,7 @@ public class Company {
 		return coupons;
 	}
 
-	public void setCoupons(ArrayList<Coupon> coupons) {
+	public void setCoupons(List<Coupon> coupons) {
 		this.coupons = coupons;
 	}
 

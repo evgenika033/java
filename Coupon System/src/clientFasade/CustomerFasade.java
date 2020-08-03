@@ -11,13 +11,22 @@ public class CustomerFasade extends ClientFasade {
 
 	private int customerID;
 
+	public CustomerFasade() {
+		// TODO Auto-generated constructor stub
+	}
+
 	public CustomerFasade(int customerID) {
 		this.customerID = customerID;
 	}
 
 	@Override
 	public boolean login(String email, String password) throws DaoException {
-		return customersDao.isCustomerExist(email, password);
+		Customer customer = customersDao.customerLogin(email, password);
+		if (customer != null) {
+			customerID = customer.getID();
+			return true;
+		}
+		return false;
 
 	}
 
