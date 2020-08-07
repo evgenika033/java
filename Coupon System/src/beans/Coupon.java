@@ -54,8 +54,8 @@ public class Coupon {
 		return ID;
 	}
 
-	public void setID(int iD) {
-		this.ID = ID;
+	public void setID(int id) {
+		this.ID = id;
 	}
 
 	public int getCompanyID() {

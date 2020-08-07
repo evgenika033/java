@@ -1,12 +1,25 @@
 package configuration;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
 
+import beans.Category;
+import beans.Company;
+import beans.Coupon;
+import beans.Customer;
+import dao.CategoriesDao;
+import dao.CompaniesDao;
+import dao.CouponsDao;
+import dao.CustomersDao;
+import exceptions.DaoException;
 import exceptions.DatabaseException;
 import utils.StringHelper;
 
@@ -50,7 +63,7 @@ public class DatabaseCreator {
 			return false;
 
 		} catch (SQLException e) {
-			throw new DatabaseException(StringHelper.DATABASE_EXEPTION_CREATE + e);
+			throw new DatabaseException(StringHelper.EXEPTION_DATABASE_CREATE + e);
 		}
 	}
 
@@ -67,7 +80,7 @@ public class DatabaseCreator {
 			System.out.println("database is droped");
 
 		} catch (SQLException e) {
-			throw new DatabaseException(StringHelper.DATABASE_EXEPTION_CREATE + e);
+			throw new DatabaseException(StringHelper.EXEPTION_DATABASE_CREATE + e);
 		}
 	}
 
@@ -91,15 +104,15 @@ public class DatabaseCreator {
 				return statement.executeUpdate(
 						StringHelper.SQL_CREATE_DATABASE + properties.getProperty(StringHelper.DB_DATABASE_NAME));
 			} catch (SQLException e) {
-				throw new DatabaseException(StringHelper.DATABASE_EXEPTION_CREATE + e);
+				throw new DatabaseException(StringHelper.EXEPTION_DATABASE_CREATE + e);
 			}
 		} else {
-			throw new DatabaseException(StringHelper.DATABASE_EXEPTION_CREATE_PARAMERTER
+			throw new DatabaseException(StringHelper.EXEPTION_DATABASE_CREATE_PARAMERTER
 					+ StringHelper.DB_CREATE_DATABASE + "=" + properties.getProperty(StringHelper.DB_CREATE_DATABASE));
 		}
 	}
 
-	public void createTables() throws DatabaseException {
+	public void createTables() throws DatabaseException, DaoException {
 		try (Connection con = DriverManager.getConnection(PropertiesController.getSqlConnection());) {
 			System.out.println("connected to " + properties.getProperty(StringHelper.DB_DATABASE_NAME));
 			Statement statement = con.createStatement();
@@ -113,9 +126,90 @@ public class DatabaseCreator {
 			System.out.println("Created table: coupons");
 			statement.executeUpdate(StringHelper.SQL_CREATE_TABLE_CUSTOMERSVSCOUPONS);
 			System.out.println("Created table: couponscustomersvscoupons");
+			insertData();
 		} catch (SQLException e) {
-			throw new DatabaseException(StringHelper.DATABASE_EXEPTION_CREATE + e);
+			throw new DatabaseException(StringHelper.EXEPTION_DATABASE_CREATE + e);
 		}
+
+	}
+
+	private void insertData() throws DatabaseException, DaoException {
+
+		System.out.println("--------start of fill database----------");
+		// create companies from file
+		try (BufferedReader in = new BufferedReader(new FileReader("config/companies.csv"))) {
+			String line;
+			CompaniesDao companiesDao = new CompaniesDao();
+			while ((line = in.readLine()) != null) {
+				String[] companyText = line.split(",");
+				companiesDao.add(new Company(companyText[0], companyText[1], companyText[2]));
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			throw new DatabaseException(StringHelper.EXEPTION_DATABASE_CREATE + e);
+		}
+		System.out.println(">> companies filled");
+		// create customers from file
+		try (BufferedReader in = new BufferedReader(new FileReader("config/customers.csv"))) {
+			String line;
+			CustomersDao customersDao = new CustomersDao();
+			while ((line = in.readLine()) != null) {
+				String[] customerText = line.split(",");
+				customersDao.add(new Customer(customerText[0], customerText[1], customerText[2], customerText[3]));
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			throw new DatabaseException(StringHelper.EXEPTION_DATABASE_CREATE + e);
+		}
+		System.out.println(">> customers filled");
+		// create categories from file
+		try (BufferedReader in = new BufferedReader(new FileReader("config/categories.csv"))) {
+			String line;
+			CategoriesDao categoriesDao = new CategoriesDao();
+			while ((line = in.readLine()) != null) {
+
+				categoriesDao.add(Category.valueOf(line));
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			throw new DatabaseException(StringHelper.EXEPTION_DATABASE_CREATE + e);
+		}
+		System.out.println(">> categories filled");
+		// create coupons from file
+		try (BufferedReader in = new BufferedReader(new FileReader("config/coupons.csv"))) {
+			String line;
+			CouponsDao couponsDao = new CouponsDao();
+			while ((line = in.readLine()) != null) {
+				String[] couponText = line.split(",");
+				int companyID = Integer.valueOf(couponText[0]);
+				Category category = Category.categoty(Integer.valueOf(couponText[1]));
+				String title = couponText[2];
+				Date startDate = Date.valueOf(couponText[3]);
+				Date endDate = Date.valueOf(couponText[4]);
+				int amount = Integer.valueOf(couponText[5]);
+				double price = Double.valueOf(couponText[6]);
+				couponsDao.add(new Coupon(companyID, category, title, null, startDate, endDate, amount, price, null));
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			throw new DatabaseException(StringHelper.EXEPTION_DATABASE_CREATE + e);
+		}
+
+		System.out.println(">> coupons filled");
+		// create customersVScoupons from file
+		try (BufferedReader in = new BufferedReader(new FileReader("config/customersVScoupons.csv"))) {
+			String line;
+			CouponsDao couponsDao = new CouponsDao();
+			while ((line = in.readLine()) != null) {
+				String[] customersVScouponsText = line.split(",");
+				couponsDao.addCouponPurchase(Integer.valueOf(customersVScouponsText[0]),
+						Integer.valueOf(customersVScouponsText[1]));
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			throw new DatabaseException(StringHelper.EXEPTION_DATABASE_CREATE + e);
+		}
+		System.out.println("--------end of fill database----------");
 
 	}
 }

@@ -4,14 +4,16 @@ import java.io.File;
 
 import beans.Category;
 import beans.Company;
-import clientFasade.AdminFasade;
-import clientFasade.CompanyFacade;
-import clientFasade.CustomerFasade;
 import configuration.DatabaseCreator;
 import configuration.PropertiesController;
 import exceptions.DaoException;
 import exceptions.DatabaseException;
 import exceptions.PropertiesExceptions;
+import fasade.AdminFasade;
+import fasade.CompanyFacade;
+import fasade.CustomerFasade;
+import loginManager.ClientType;
+import loginManager.LoginManager;
 import utils.StringHelper;
 
 public class App {
@@ -37,7 +39,7 @@ public class App {
 		}
 	}
 
-	private static void checkParameters() {
+	private static void checkParameters() throws DaoException {
 		// check property: create database. if true => go to create database
 		if (Boolean.valueOf(PropertiesController.getProperties().getProperty(StringHelper.DB_CREATE_DATABASE))) {
 			System.out.println("start create new database");
@@ -84,13 +86,41 @@ public class App {
 			// customersTest();
 			// couponsTest();
 			// customerFasadeTest();
-			companyFacadeTest();
+			// companyFacadeTest();
 			// adminFacadeTest();
-
+			// loginManagerTest();
 			System.out.println("end");
 		} else {
-			System.out.println(StringHelper.PROPERTIES_NOT_READ);
+			System.out.println(StringHelper.EXCEPTION_PROPERTIES_NOT_READ);
 		}
+
+	}
+
+	private static void loginManagerTest() throws DaoException {
+		AdminFasade adminFasade = (AdminFasade) LoginManager.getInstance().login("admin@admin.com", "admin",
+				ClientType.Administrator);
+		System.out.println("AdminFasad login success: " + adminFasade);
+		adminFasade = (AdminFasade) LoginManager.getInstance().login("$dmin@admin.com", "admin",
+				ClientType.Administrator);
+		System.out.println("AdminFasad  login failed: " + adminFasade);
+		System.out.println("---------------");
+
+		CustomerFasade customerFasade = (CustomerFasade) LoginManager.getInstance().login("w@124", "xx22",
+				ClientType.Customer);
+
+		System.out.println("customerFasad login success: " + customerFasade);
+		customerFasade = (CustomerFasade) LoginManager.getInstance().login("w@120", "xx22", ClientType.Customer);
+
+		System.out.println("customerFasad login failed: " + customerFasade);
+		System.out.println("---------------");
+
+		CompanyFacade companyFasade = (CompanyFacade) LoginManager.getInstance().login("4321", "999",
+				ClientType.Company);
+
+		System.out.println("companyFasad login success: " + companyFasade);
+		companyFasade = (CompanyFacade) LoginManager.getInstance().login("w@120", "xx212", ClientType.Customer);
+
+		System.out.println("companyFasad login failed: " + companyFasade);
 
 	}
 

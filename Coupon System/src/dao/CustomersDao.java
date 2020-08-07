@@ -21,7 +21,7 @@ public class CustomersDao implements ICustomersDao<Customer> {
 		try {
 			connection = ConnectionPool.getInstance().getConnection();
 		} catch (SQLException e) {
-			throw new DaoException(StringHelper.DAO_EXEPTION_CONNECTION, e);
+			throw new DaoException(StringHelper.EXEPTION_DAO_CONNECTION, e);
 		}
 	}
 
@@ -30,7 +30,7 @@ public class CustomersDao implements ICustomersDao<Customer> {
 			ConnectionPool.getInstance().returnConnection(connection);
 			connection = null;
 		} catch (SQLException e) {
-			throw new DaoException(StringHelper.DAO_EXEPTION_CONNECTION, e);
+			throw new DaoException(StringHelper.EXEPTION_DAO_CONNECTION, e);
 		}
 	}
 
@@ -49,7 +49,7 @@ public class CustomersDao implements ICustomersDao<Customer> {
 			preparedStatement.setString(4, addObject.getPassword());
 			preparedStatement.executeUpdate();
 			returnConnection();
-			System.out.println("inserted");
+			System.out.println("customer inserted: " + addObject.getFirstName() + " " + addObject.getLastName());
 		} catch (SQLException e) {
 			returnConnection();
 			throw new DaoException("insert exception: ", e);
@@ -73,13 +73,15 @@ public class CustomersDao implements ICustomersDao<Customer> {
 			int result = preparedStatement.executeUpdate();
 			returnConnection();
 			if (result > 0) {
-				System.out.println("updated true");
+				System.out.println(String.format("customer updated %s %s true", updateObject.getFirstName(),
+						updateObject.getLastName()));
 			} else {
-				System.out.println("updated false");
+				System.out.println(String.format("customer updated %s %s false", updateObject.getFirstName(),
+						updateObject.getLastName()));
 			}
 		} catch (SQLException e) {
 			returnConnection();
-			throw new DaoException("updated exception: ", e);
+			throw new DaoException(StringHelper.EXCEPTION_UPDATE, e);
 		}
 
 	}
@@ -102,7 +104,7 @@ public class CustomersDao implements ICustomersDao<Customer> {
 			return null;
 		} catch (SQLException e) {
 			returnConnection();
-			throw new DaoException("get exception: ", e);
+			throw new DaoException(StringHelper.EXCEPTION_GET, e);
 		}
 
 	}
@@ -119,14 +121,14 @@ public class CustomersDao implements ICustomersDao<Customer> {
 			return customer;
 		} catch (SQLException e) {
 			returnConnection();
-			throw new DaoException("get exception: ", e);
+			throw new DaoException(StringHelper.EXCEPTION_GET, e);
 		}
 	}
 
 	@Override
 	public List<Customer> getAll() throws DaoException {
 		List<Customer> list = new ArrayList<>();
-		String sql = StringHelper.sql_GET_ALL;
+		String sql = StringHelper.SQL_GET_ALL;
 		sql = sql.replaceAll(StringHelper.TABLE_PLACE_HOLDER, StringHelper.TABLE_CUSTOMER);
 		getConnection();
 		try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
@@ -139,15 +141,17 @@ public class CustomersDao implements ICustomersDao<Customer> {
 			return list;
 		} catch (SQLException e) {
 			returnConnection();
-			throw new DaoException("getAll exception: ", e);
+			throw new DaoException(StringHelper.EXCEPTION_GET_ALL, e);
 		}
 
 	}
 
 	@Override
 	public Customer customerLogin(String email, String password) throws DaoException {
-		String sql = StringHelper.SQL_QUERY_GET_CUSTOMER_BY_EMAIL_AND_PASSWORD;
-		sql = sql.replaceAll(StringHelper.TABLE_PLACE_HOLDER, StringHelper.TABLE_CUSTOMER);
+		String sql = StringHelper.SQL_GET.replaceAll(StringHelper.TABLE_PLACE_HOLDER, StringHelper.TABLE_CUSTOMER);
+		sql = sql.replaceAll(StringHelper.PARAMETERS_GET_PLACE_HOLDER,
+				StringHelper.GET_PARAMETERS_CUSTOMER_BY_EMAIL_AND_PASSWORD);
+
 		System.out.println(sql);
 		getConnection();
 		try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
@@ -159,7 +163,7 @@ public class CustomersDao implements ICustomersDao<Customer> {
 			}
 		} catch (SQLException e) {
 			returnConnection();
-			throw new DaoException("getAll exception: ", e);
+			throw new DaoException(StringHelper.EXCEPTION_GET, e);
 
 		}
 		returnConnection();
@@ -178,10 +182,10 @@ public class CustomersDao implements ICustomersDao<Customer> {
 			preparedStatement.setInt(1, objectID);
 			int result = preparedStatement.executeUpdate();
 			returnConnection();
-			System.out.println("deleted: " + result);
+			System.out.println("customer deleted id " + objectID + ": " + result);
 		} catch (SQLException e) {
 			returnConnection();
-			throw new DaoException("delete exception: ", e);
+			throw new DaoException(StringHelper.EXCEPTION_DELETE, e);
 		}
 
 	}

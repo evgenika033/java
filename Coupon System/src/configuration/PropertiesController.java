@@ -41,7 +41,7 @@ public class PropertiesController {
 			properties.load(input);
 			PROPERTIES_LOAD_SUCCESSFULLY = true;
 		} catch (IOException e) {
-			throw new PropertiesExceptions(StringHelper.PROPERTIES_READ_EXCEPTION + StringHelper.CONFIG);
+			throw new PropertiesExceptions(StringHelper.EXCEPTION_PROPERTIES_READ + StringHelper.CONFIG);
 		}
 	}
 
@@ -106,7 +106,7 @@ public class PropertiesController {
 			prop.store(output, StringHelper.PROPERTIES_OWNER);
 			readPropertiesFromFile();
 		} catch (IOException io) {
-			throw new PropertiesExceptions(StringHelper.PROPERTIES_SAVE_EXCEPTION + io);
+			throw new PropertiesExceptions(StringHelper.EXCEPTION_PROPERTIES_SAVE + io);
 		}
 
 	}

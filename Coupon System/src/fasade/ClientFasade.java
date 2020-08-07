@@ -1,4 +1,4 @@
-package clientFasade;
+package fasade;
 
 import dao.CompaniesDao;
 import dao.CouponsDao;

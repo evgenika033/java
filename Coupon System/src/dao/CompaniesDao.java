@@ -20,7 +20,7 @@ public class CompaniesDao implements ICompaniesDao<Company> {
 		try {
 			connection = ConnectionPool.getInstance().getConnection();
 		} catch (SQLException e) {
-			throw new DaoException(StringHelper.DAO_EXEPTION_CONNECTION, e);
+			throw new DaoException(StringHelper.EXEPTION_DAO_CONNECTION, e);
 		}
 	}
 
@@ -29,7 +29,7 @@ public class CompaniesDao implements ICompaniesDao<Company> {
 			ConnectionPool.getInstance().returnConnection(connection);
 			connection = null;
 		} catch (SQLException e) {
-			throw new DaoException(StringHelper.DAO_EXEPTION_CONNECTION, e);
+			throw new DaoException(StringHelper.EXEPTION_DAO_CONNECTION, e);
 		}
 	}
 
@@ -156,7 +156,7 @@ public class CompaniesDao implements ICompaniesDao<Company> {
 	@Override
 	public List<Company> getAll() throws DaoException {
 		List<Company> list = new ArrayList<>();
-		String sql = StringHelper.sql_GET_ALL;
+		String sql = StringHelper.SQL_GET_ALL;
 		sql = sql.replaceAll(StringHelper.TABLE_PLACE_HOLDER, StringHelper.TABLE_COMPANIES);
 		getConnection();
 		try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
@@ -177,8 +177,9 @@ public class CompaniesDao implements ICompaniesDao<Company> {
 
 	@Override
 	public Company companyLogin(String email, String password) throws DaoException {
-		String sql = StringHelper.SQL_QUERY_COMPANY_BY_EMAIL_AND_PASSWORD;
-		sql = sql.replaceAll(StringHelper.TABLE_PLACE_HOLDER, StringHelper.TABLE_COMPANIES);
+		String sql = StringHelper.SQL_GET.replaceAll(StringHelper.TABLE_PLACE_HOLDER, StringHelper.TABLE_COMPANIES);
+		sql = sql.replaceAll(StringHelper.PARAMETERS_GET_PLACE_HOLDER,
+				StringHelper.GET_PARAMETERS_COMPANY_BY_EMAIL_AND_PASSWORD);
 		System.out.println(sql);
 		getConnection();
 		try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
@@ -215,7 +216,11 @@ public class CompaniesDao implements ICompaniesDao<Company> {
 
 	@Override
 	public boolean isCompanyValid(String companyName, String companyEmail) throws DaoException {
-		String sql = StringHelper.SQL_QUERY_GET_COMPANY_BY_NAME_OR_EMAIL;
+		String sql = StringHelper.SQL_GET_COUNT.replaceAll(StringHelper.TABLE_PLACE_HOLDER,
+				StringHelper.TABLE_COMPANIES);
+		sql = sql.replaceAll(StringHelper.PARAMETERS_GET_PLACE_HOLDER,
+				StringHelper.GET_PARAMETERS_COMPANY_BY_NAME_OR_EMAIL);
+
 		System.out.println(sql);
 		getConnection();
 		try (PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
@@ -238,7 +243,10 @@ public class CompaniesDao implements ICompaniesDao<Company> {
 
 	@Override
 	public boolean isCompanyValid(String companyEmail, int companyID) throws DaoException {
-		String sql = StringHelper.SQL_QUERY_GET_COMPANY_BY_EMAIL_AND_ID;
+		String sql = StringHelper.SQL_GET_COUNT.replaceAll(StringHelper.TABLE_PLACE_HOLDER,
+				StringHelper.TABLE_COMPANIES);
+		sql = sql.replaceAll(StringHelper.PARAMETERS_GET_PLACE_HOLDER,
+				StringHelper.GET_PARAMETERS_COMPANY_BY_EMAIL_AND_ID);
 		System.out.println(sql);
 		getConnection();
 		try (PreparedStatement preparedStatement = connection.prepareStatement(sql);) {

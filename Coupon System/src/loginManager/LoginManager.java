@@ -1,10 +1,10 @@
-package LoginManager;
+package loginManager;
 
-import clientFasade.AdminFasade;
-import clientFasade.ClientFasade;
-import clientFasade.CompanyFacade;
-import clientFasade.CustomerFasade;
 import exceptions.DaoException;
+import fasade.AdminFasade;
+import fasade.ClientFasade;
+import fasade.CompanyFacade;
+import fasade.CustomerFasade;
 
 public class LoginManager {
 

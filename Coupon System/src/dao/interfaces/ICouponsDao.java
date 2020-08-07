@@ -1,5 +1,6 @@
 package dao.interfaces;
 
+import java.sql.Date;
 import java.util.List;
 
 import beans.Category;
@@ -101,7 +102,7 @@ public interface ICouponsDao<T> extends IDaoCrud<T> {
 	 * @return
 	 * @throws DaoException
 	 */
-	boolean isCouponValid(int companyID, String title) throws DaoException;
+	boolean isCouponValid(int companyID, String title, boolean newCoupon) throws DaoException;
 
 	/**
 	 * coupon's amount > 0
@@ -121,5 +122,7 @@ public interface ICouponsDao<T> extends IDaoCrud<T> {
 	 * @throws DaoException
 	 */
 	boolean isPurchaseCouponCustomerValid(int couponID, int customerID) throws DaoException;
+
+	List<T> get(Date date) throws DaoException;
 
 }

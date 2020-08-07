@@ -1,4 +1,4 @@
-package clientFasade;
+package fasade;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package LoginManager;
+package loginManager;
 
 public enum ClientType {
 	Administrator, Company, Customer
