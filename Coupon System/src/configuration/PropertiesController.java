@@ -102,6 +102,8 @@ public class PropertiesController {
 			prop.setProperty(StringHelper.DB_DATABASE_MASTER, PropertiesHelper.DB_DATABASE_MASTER_VALUE);
 			prop.setProperty(StringHelper.DB_USER, PropertiesHelper.DB_USER_VALUE);
 			prop.setProperty(StringHelper.DB_PASSWORD, PropertiesHelper.DB_PASSWORD_VALUE);
+			prop.setProperty(StringHelper.DB_JOB, PropertiesHelper.DB_JOB_VALUE);
+			prop.setProperty(StringHelper.DB_JOB_INTERVAL, PropertiesHelper.DB_JOB_INTERVAL_MIN);
 			// save properties to file
 			prop.store(output, StringHelper.PROPERTIES_OWNER);
 			readPropertiesFromFile();
@@ -109,6 +111,23 @@ public class PropertiesController {
 			throw new PropertiesExceptions(StringHelper.EXCEPTION_PROPERTIES_SAVE + io);
 		}
 
+	}
+
+	/**
+	 * save property to file
+	 * 
+	 * @param key
+	 * @param value
+	 * @throws PropertiesExceptions
+	 */
+	public static void write(String key, String value) throws PropertiesExceptions {
+		try (OutputStream output = new FileOutputStream(StringHelper.CONFIG)) {
+			properties.setProperty(key, value);
+			properties.store(output, StringHelper.PROPERTIES_OWNER);
+			readPropertiesFromFile();
+		} catch (IOException io) {
+			throw new PropertiesExceptions(StringHelper.EXCEPTION_PROPERTIES_SAVE + io);
+		}
 	}
 
 }

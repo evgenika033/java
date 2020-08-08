@@ -6,12 +6,14 @@ import beans.Category;
 import beans.Company;
 import configuration.DatabaseCreator;
 import configuration.PropertiesController;
+import dao.CouponsDao;
 import exceptions.DaoException;
 import exceptions.DatabaseException;
 import exceptions.PropertiesExceptions;
 import fasade.AdminFasade;
 import fasade.CompanyFacade;
 import fasade.CustomerFasade;
+import job.CouponExpirationDailyJob;
 import loginManager.ClientType;
 import loginManager.LoginManager;
 import utils.StringHelper;
@@ -81,6 +83,7 @@ public class App {
 		// read properties from file
 		if (PropertiesController.PROPERTIES_LOAD_SUCCESSFULLY) {
 			checkParameters();
+			// job();
 			// check function
 			// companiesTest();
 			// customersTest();
@@ -94,6 +97,11 @@ public class App {
 			System.out.println(StringHelper.EXCEPTION_PROPERTIES_NOT_READ);
 		}
 
+	}
+
+	private static void job() {
+		CouponExpirationDailyJob job = new CouponExpirationDailyJob(new CouponsDao(), false);
+		job.run();
 	}
 
 	private static void loginManagerTest() throws DaoException {

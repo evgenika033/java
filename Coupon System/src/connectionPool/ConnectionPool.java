@@ -44,6 +44,7 @@ public class ConnectionPool {
 		Iterator<Connection> it = connections.iterator();
 		java.sql.Connection con = it.next();
 		it.remove();
+		System.out.println("get connection. size " + connections.size());
 		return con;
 
 	}
@@ -51,6 +52,7 @@ public class ConnectionPool {
 	public synchronized void returnConnection(Connection connection) {
 		connections.add(connection);
 		notifyAll();
+		System.out.println("return connection. size " + connections.size());
 	}
 
 }
