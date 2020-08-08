@@ -20,8 +20,9 @@ public class StringHelper {
 	public static final String DB_DATABASE_MASTER = "db.database.master";
 	public static final String DB_USER = "db.user";
 	public static final String DB_PASSWORD = "db.password";
-	public static final String DB_JOB = "job.date";
-	public static final String DB_JOB_INTERVAL = "job.interval.minutes";
+	public static final String JOB_COUPON_EXPIRATION = "job.date";
+	public static final String CONNECTION_POOL = "connection.pool";
+	public static final String JOB_COUPON_EXPIRATION_INTERVAL = "job.interval.minutes";
 
 	public static final String PROPERTIES_OWNER = "created by Evgenia Ostrovsi";
 

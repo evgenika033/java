@@ -41,7 +41,7 @@ public class App {
 		}
 	}
 
-	private static void checkParameters() throws DaoException {
+	private static void checkParameters() throws DaoException, PropertiesExceptions {
 		// check property: create database. if true => go to create database
 		if (Boolean.valueOf(PropertiesController.getProperties().getProperty(StringHelper.DB_CREATE_DATABASE))) {
 			System.out.println("start create new database");
@@ -58,16 +58,8 @@ public class App {
 				// 4. create tables
 				databaseCreator.createTables();
 				System.out.println("all tables are created");
-				PropertiesController.getProperties().setProperty(StringHelper.DB_CREATE_DATABASE,
-						Boolean.toString(false));
-				System.out.println("set property: " + StringHelper.DB_CREATE_DATABASE + "=false");
-				try {
-					System.out.println("save properties to config file: " + StringHelper.CONFIG);
-					PropertiesController.write();
-					System.out.println("===================================");
-				} catch (PropertiesExceptions e) {
-					e.printStackTrace();
-				}
+				System.out.println("save property: " + StringHelper.DB_CREATE_DATABASE + "=false");
+				PropertiesController.write(StringHelper.DB_CREATE_DATABASE, Boolean.toString(false));
 			} catch (DatabaseException e) {
 				System.out.println(e);
 			}
@@ -77,7 +69,7 @@ public class App {
 		System.out.println("===================================");
 	}
 
-	public static void main(String[] args) throws DaoException {
+	public static void main(String[] args) throws DaoException, PropertiesExceptions {
 		// start app
 		init();
 		// read properties from file

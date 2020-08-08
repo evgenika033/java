@@ -102,8 +102,9 @@ public class PropertiesController {
 			prop.setProperty(StringHelper.DB_DATABASE_MASTER, PropertiesHelper.DB_DATABASE_MASTER_VALUE);
 			prop.setProperty(StringHelper.DB_USER, PropertiesHelper.DB_USER_VALUE);
 			prop.setProperty(StringHelper.DB_PASSWORD, PropertiesHelper.DB_PASSWORD_VALUE);
-			prop.setProperty(StringHelper.DB_JOB, PropertiesHelper.DB_JOB_VALUE);
-			prop.setProperty(StringHelper.DB_JOB_INTERVAL, PropertiesHelper.DB_JOB_INTERVAL_MIN);
+			prop.setProperty(StringHelper.JOB_COUPON_EXPIRATION, PropertiesHelper.DB_JOB_VALUE);
+			prop.setProperty(StringHelper.JOB_COUPON_EXPIRATION_INTERVAL, PropertiesHelper.DB_JOB_INTERVAL_MIN);
+			prop.setProperty(StringHelper.CONNECTION_POOL, PropertiesHelper.CONNECTION_POOL);
 			// save properties to file
 			prop.store(output, StringHelper.PROPERTIES_OWNER);
 			readPropertiesFromFile();

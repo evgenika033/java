@@ -29,7 +29,7 @@ public class CouponExpirationDailyJob implements Runnable {
 	}
 
 	private void init() {
-		jobInterval = Integer.valueOf(PropertiesController.getProperties().getProperty(StringHelper.DB_JOB_INTERVAL))
+		jobInterval = Integer.valueOf(PropertiesController.getProperties().getProperty(StringHelper.JOB_COUPON_EXPIRATION_INTERVAL))
 				* 60000;
 	}
 
@@ -67,7 +67,7 @@ public class CouponExpirationDailyJob implements Runnable {
 	 */
 	private void job() throws PropertiesExceptions, DaoException {
 		// run if job date last run from configuration file != today
-		if (!PropertiesController.getProperties().getProperty(StringHelper.DB_JOB).equals(getDate().toString())) {
+		if (!PropertiesController.getProperties().getProperty(StringHelper.JOB_COUPON_EXPIRATION).equals(getDate().toString())) {
 			List<Coupon> listCoupons = couponsDao.get(getDate());
 			System.out.println("-------delete job execute");
 			// get old coupons
@@ -77,7 +77,7 @@ public class CouponExpirationDailyJob implements Runnable {
 			}
 			System.out.println("------delete job done");
 			// save last run to configuration file
-			PropertiesController.write(StringHelper.DB_JOB, getDate().toString());
+			PropertiesController.write(StringHelper.JOB_COUPON_EXPIRATION, getDate().toString());
 		} else {
 			System.out.println("job not need to execute");
 		}

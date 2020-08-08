@@ -12,4 +12,5 @@ public class PropertiesHelper {
 	protected static final String DB_PASSWORD_VALUE = "sa";
 	protected static final String DB_JOB_VALUE = "2020-01-01";
 	protected static final String DB_JOB_INTERVAL_MIN = "1";
+	protected static final String CONNECTION_POOL = "10";
 }

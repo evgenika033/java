@@ -8,15 +8,16 @@ import java.util.Iterator;
 import java.util.Set;
 
 import configuration.PropertiesController;
+import utils.StringHelper;
 
 public class ConnectionPool {
 	private Set<java.sql.Connection> connections;
 	private static ConnectionPool instance;
-	private static final int SIZE = 10;
+	private static int poolSize = 0;
 
 	private ConnectionPool() throws SQLException {
 		init();
-		for (int i = 0; i < SIZE; i++) {
+		for (int i = 0; i < poolSize; i++) {
 			connections.add(DriverManager.getConnection(PropertiesController.getSqlConnection()));
 		}
 	}
@@ -31,6 +32,9 @@ public class ConnectionPool {
 
 	private void init() {
 		connections = new HashSet<>();
+
+		poolSize = Integer.valueOf(PropertiesController.getProperties().getProperty(StringHelper.CONNECTION_POOL));
+
 	}
 
 	public synchronized Connection getConnection() {
