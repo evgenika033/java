@@ -25,12 +25,12 @@ public class CouponExpirationDailyJob implements Runnable {
 	}
 
 	public void stop() {
-
+		quit = true;
 	}
 
 	private void init() {
-		jobInterval = Integer.valueOf(PropertiesController.getProperties().getProperty(StringHelper.JOB_COUPON_EXPIRATION_INTERVAL))
-				* 60000;
+		jobInterval = Integer.valueOf(
+				PropertiesController.getProperties().getProperty(StringHelper.JOB_COUPON_EXPIRATION_INTERVAL)) * 60000;
 	}
 
 	private Date getDate() {
@@ -42,13 +42,14 @@ public class CouponExpirationDailyJob implements Runnable {
 		String formatted = simpleDateFormat.format(calendar.getTime());
 		// converting string into sql date
 		Date date = Date.valueOf(formatted);
-		System.out.println("job date: " + date);
+		// System.out.println("job date: " + date);
 		return date;
 
 	}
 
 	@Override
 	public void run() {
+		System.out.println("job started");
 		while (!quit) {
 			try {
 				job();
@@ -57,6 +58,7 @@ public class CouponExpirationDailyJob implements Runnable {
 				e.printStackTrace();
 			}
 		}
+		System.out.println("job stopped");
 	}
 
 	/**
@@ -67,15 +69,16 @@ public class CouponExpirationDailyJob implements Runnable {
 	 */
 	private void job() throws PropertiesExceptions, DaoException {
 		// run if job date last run from configuration file != today
-		if (!PropertiesController.getProperties().getProperty(StringHelper.JOB_COUPON_EXPIRATION).equals(getDate().toString())) {
+		if (!PropertiesController.getProperties().getProperty(StringHelper.JOB_COUPON_EXPIRATION)
+				.equals(getDate().toString())) {
 			List<Coupon> listCoupons = couponsDao.get(getDate());
-			System.out.println("-------delete job execute");
+			System.out.println("-------delete job start");
 			// get old coupons
 			for (Coupon coupon : listCoupons) {
 				// delete old coupon with history
 				couponsDao.delete(coupon.getID());
 			}
-			System.out.println("------delete job done");
+			System.out.println("------delete job stop");
 			// save last run to configuration file
 			PropertiesController.write(StringHelper.JOB_COUPON_EXPIRATION, getDate().toString());
 		} else {

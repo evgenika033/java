@@ -186,6 +186,7 @@ public class CompaniesDao implements ICompaniesDao<Company> {
 			preparedStatement.setString(1, email);
 			preparedStatement.setString(2, password);
 			ResultSet resultSet = preparedStatement.executeQuery();
+			returnConnection();
 			if (resultSet.next()) {
 				return resultToCompany(resultSet);
 			}

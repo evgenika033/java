@@ -48,6 +48,8 @@ public class StringHelper {
 	public static final String EXCEPTION_COMPANY_NOT_FOUND = "not found company by ID";
 	public static final String EXCEPTION_COUPON_NOT_FOUND = "not found coupon by ID";
 	public static final String EXCEPTION_COUPON_AMOUNT_EMPTY = "coupon amount is empty";
+	public static final String EXCEPTION_CONNECTION_CLOSE_WAIT = "connection pool did not close all connections";
+	public static final String EXCEPTION_CONNECTION_CLOSE = "connection close exception";
 	// ----------------------------------
 	// SQL queries
 	// create/ drop database
@@ -127,5 +129,6 @@ public class StringHelper {
 	// other
 	public static final String ADMIN_EMAIL = "admin@admin.com";
 	public static final String ADMIN_PASSWORD = "admin";
-
+	public static final String CONNECTION_POOL_CLOSED = "connection pool closed";
+	public static final String CONNECTION_POOL_CLOSE_FAILED = "connection pool closed failed";
 }
