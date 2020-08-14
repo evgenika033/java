@@ -59,12 +59,11 @@ public class CouponsDao implements ICouponsDao<Coupon> {
 
 	@Override
 	public void add(Coupon addObject) throws DaoException {
-		boolean newCoupon = true;
 		String sql = StringHelper.SQL_ADD;// "insert into _TABLE_NAME_ values(_ADD_PARAMETERS_)";
 		// replace place_holders
 		sql = sql.replaceAll(StringHelper.TABLE_PLACE_HOLDER, StringHelper.TABLE_COUPON)
 				.replaceAll(StringHelper.PARAMETERS_ADD_PLACE_HOLDER, StringHelper.ADD_PARAMETERS_COUPON);
-		if (isCouponValid(addObject.getCompanyID(), addObject.getTitle(), newCoupon)) {
+		if (isCouponValid(addObject.getCompanyID(), addObject.getTitle())) {
 			getConnection();
 			// continue add coupon
 			try (PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
@@ -127,30 +126,27 @@ public class CouponsDao implements ICouponsDao<Coupon> {
 	@Override
 	public void update(Coupon updateObject) throws DaoException {
 		boolean newCoupon = false;
-		String sql = StringHelper.SQL_UPDATE;
-		sql = sql.replaceAll(StringHelper.TABLE_PLACE_HOLDER, StringHelper.TABLE_COUPON)
-				.replaceAll(StringHelper.PARAMETERS_UPDATE_PLACE_HOLDER, StringHelper.UPDATE_PARAMETERS_COUPON);
+		String sql = StringHelper.SQL_UPDATE.replaceAll(StringHelper.TABLE_PLACE_HOLDER, StringHelper.TABLE_COUPON);
+		sql = sql.replaceAll(StringHelper.PARAMETERS_UPDATE_PLACE_HOLDER, StringHelper.UPDATE_PARAMETERS_COUPON);
 		System.out.println(sql);
 		Coupon couponDB = get(updateObject.getID());
 		isCouponValidate(couponDB);
 		updateObject.setCompanyID(couponDB.getCompanyID());
 		updateObject.setTitle(couponDB.getTitle());
-		if (isCouponValid(updateObject.getCompanyID(), updateObject.getTitle(), newCoupon)) {
-			getConnection();
-			try (PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
-				// preparedStatement.setInt(1, updateObject.getCompanyID());
-				couponToStatement(preparedStatement, updateObject, newCoupon);
-				int result = preparedStatement.executeUpdate();
-				returnConnection();
-				if (result > 0) {
-					System.out.println("coupon updated true: " + updateObject.getTitle());
-				} else {
-					System.out.println("coupon updated false: " + updateObject.getTitle());
-				}
-			} catch (SQLException e) {
-				returnConnection();
-				throw new DaoException(StringHelper.EXCEPTION_UPDATE, e);
+		getConnection();
+		try (PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
+			// preparedStatement.setInt(1, updateObject.getCompanyID());
+			couponToStatement(preparedStatement, updateObject, newCoupon);
+			int result = preparedStatement.executeUpdate();
+			returnConnection();
+			if (result > 0) {
+				System.out.println("coupon updated true: " + updateObject.getTitle());
+			} else {
+				System.out.println("coupon updated false: " + updateObject.getTitle());
 			}
+		} catch (SQLException e) {
+			returnConnection();
+			throw new DaoException(StringHelper.EXCEPTION_UPDATE, e);
 		}
 	}
 
@@ -169,9 +165,8 @@ public class CouponsDao implements ICouponsDao<Coupon> {
 
 	@Override
 	public Coupon get(int id) throws DaoException {
-		String sql = StringHelper.SQL_GET;
-		sql = sql.replaceAll(StringHelper.TABLE_PLACE_HOLDER, StringHelper.TABLE_COUPON)
-				.replaceAll(StringHelper.PARAMETERS_GET_PLACE_HOLDER, StringHelper.GET_PARAMETERS_COUPON);
+		String sql = StringHelper.SQL_GET.replaceAll(StringHelper.TABLE_PLACE_HOLDER, StringHelper.TABLE_COUPON);
+		sql = sql.replaceAll(StringHelper.PARAMETERS_GET_PLACE_HOLDER, StringHelper.GET_PARAMETERS_COUPON);
 		getConnection();
 		try (PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
 			preparedStatement.setInt(1, id);
@@ -186,6 +181,27 @@ public class CouponsDao implements ICouponsDao<Coupon> {
 			throw new DaoException(StringHelper.EXCEPTION_GET, e);
 		}
 
+	}
+
+	@Override
+	public Coupon get(int companyID, String title) throws DaoException {
+		String sql = StringHelper.SQL_GET.replaceAll(StringHelper.TABLE_PLACE_HOLDER, StringHelper.TABLE_COUPON);
+		sql = sql.replaceAll(StringHelper.PARAMETERS_GET_PLACE_HOLDER,
+				StringHelper.GET_PARAMETERS_COUPONS_OF_COMPANY_BY_TITLE);
+		getConnection();
+		try (PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
+			preparedStatement.setInt(1, companyID);
+			preparedStatement.setString(2, title);
+			ResultSet resultSet = preparedStatement.executeQuery();
+			returnConnection();
+			if (resultSet.next()) {
+				return resultToCoupon(resultSet);
+			}
+			return null;
+		} catch (SQLException e) {
+			returnConnection();
+			throw new DaoException(StringHelper.EXCEPTION_GET, e);
+		}
 	}
 
 	@Override
@@ -230,9 +246,9 @@ public class CouponsDao implements ICouponsDao<Coupon> {
 
 	@Override
 	public void addCouponPurchase(int customerID, int couponID) throws DaoException {
-		String sql = StringHelper.SQL_ADD;
-		sql = sql.replaceAll(StringHelper.TABLE_PLACE_HOLDER, StringHelper.TABLE_CUSTVSCOUPONS)
-				.replaceAll(StringHelper.PARAMETERS_ADD_PLACE_HOLDER, StringHelper.ADD_PARAMETERS_CUSTVSCOUPONS_COUPON);
+		String sql = StringHelper.SQL_ADD.replaceAll(StringHelper.TABLE_PLACE_HOLDER, StringHelper.TABLE_CUSTVSCOUPONS);
+		sql = sql.replaceAll(StringHelper.PARAMETERS_ADD_PLACE_HOLDER,
+				StringHelper.ADD_PARAMETERS_CUSTVSCOUPONS_COUPON);
 		System.out.println(sql);
 		if (isPurchaseCouponAmountValid(couponID) && isPurchaseCouponCustomerValid(couponID, customerID)) {
 			Coupon coupon = get(couponID);
@@ -428,7 +444,7 @@ public class CouponsDao implements ICouponsDao<Coupon> {
 		List<Coupon> coupons = new ArrayList<>();
 		String sql = StringHelper.SQL_GET;
 		sql = sql.replaceAll(StringHelper.TABLE_PLACE_HOLDER, StringHelper.TABLE_COUPON).replaceAll("_GET_PARAMETERS_",
-				StringHelper.GET_PARAMETERS_COUPONS_OF_COMPANY__BY_CATEGORY);
+				StringHelper.GET_PARAMETERS_COUPONS_OF_COMPANY_BY_CATEGORY);
 		System.out.println(sql);
 		int categoryId = categoriesDao.get(category.name().toUpperCase());
 		getConnection();
@@ -508,13 +524,14 @@ public class CouponsDao implements ICouponsDao<Coupon> {
 	}
 
 	@Override
-	public boolean isCouponValid(int companyID, String title, boolean newCoupon) throws DaoException {
-		String sql = StringHelper.SQL_GET.replaceAll(StringHelper.TABLE_PLACE_HOLDER, StringHelper.TABLE_COUPON);
-		sql = newCoupon
-				? sql.replaceAll(StringHelper.PARAMETERS_GET_PLACE_HOLDER,
-						StringHelper.GET_PARAMETERS_COUPONS_OF_COMPANY_BY_TITLE)
-				: sql.replaceAll(StringHelper.PARAMETERS_GET_PLACE_HOLDER,
-						StringHelper.GET_PARAMETERS_COUPONS_OF_OTHER_COMPANY_BY_TITLE);
+	public boolean isCouponValid(int companyID, String title) throws DaoException {
+		String sql = StringHelper.SQL_GET_COUNT.replaceAll(StringHelper.TABLE_PLACE_HOLDER, StringHelper.TABLE_COUPON);
+		sql = sql.replaceAll(StringHelper.PARAMETERS_GET_PLACE_HOLDER,
+				StringHelper.GET_PARAMETERS_COUPONS_OF_COMPANY_BY_TITLE);
+
+		if (title.equals("accessories7")) {
+			System.out.println(title);
+		}
 		System.out.println(sql);
 		getConnection();
 		// check if current coupon is not exist with some title for this company
@@ -547,9 +564,9 @@ public class CouponsDao implements ICouponsDao<Coupon> {
 
 	@Override
 	public boolean isPurchaseCouponCustomerValid(int couponID, int customerID) throws DaoException {
-		String sql = StringHelper.SQL_GET_COUNT;
-		sql = sql.replaceAll(StringHelper.TABLE_PLACE_HOLDER, StringHelper.TABLE_CUSTVSCOUPONS).replaceAll(
-				StringHelper.PARAMETERS_GET_PLACE_HOLDER,
+		String sql = StringHelper.SQL_GET_COUNT.replaceAll(StringHelper.TABLE_PLACE_HOLDER,
+				StringHelper.TABLE_CUSTVSCOUPONS);
+		sql = sql.replaceAll(StringHelper.PARAMETERS_GET_PLACE_HOLDER,
 				StringHelper.GET_PARAMETERS_CUSTVSCOUPONS_CUSTOMERID_AND_COUPONID);
 		System.out.println(sql);
 		getConnection();

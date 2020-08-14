@@ -2,12 +2,13 @@ package test;
 
 import java.io.File;
 import java.sql.SQLException;
+import java.util.List;
 
 import beans.Category;
 import beans.Company;
+import beans.Coupon;
 import configuration.DatabaseCreator;
 import configuration.PropertiesController;
-import connectionPool.ConnectionPool;
 import dao.CouponsDao;
 import exceptions.DaoException;
 import exceptions.DatabaseException;
@@ -31,18 +32,18 @@ public class Test {
 		// read properties from file
 		if (PropertiesController.PROPERTIES_LOAD_SUCCESSFULLY) {
 			checkParameters();
-			job();
+			// job();
 			customerFasadeTest();
+			companyFacadeTest();
+			// companiesTest();
 			// loginManagerTest();
 			// check function
-			// companiesTest();
 			// customersTest();
 			// couponsTest();
 
-			// companyFacadeTest();
 			// adminFacadeTest();
-			job.stop();
-			ConnectionPool.getInstance().closeAllConnections();
+			// job.stop();
+			// ConnectionPool.getInstance().closeAllConnections();
 			System.out.println("--------end program---------");
 		} else {
 			System.out.println(StringHelper.EXCEPTION_PROPERTIES_NOT_READ);
@@ -107,7 +108,7 @@ public class Test {
 
 	private static ClientFasade loginManagerTest(String email, String password, ClientType clientType)
 			throws DaoException {
-		return LoginManager.getInstance().login(email, password, ClientType.Customer);
+		return LoginManager.getInstance().login(email, password, clientType);
 	}
 
 	private static void adminFacadeTest() throws DaoException {
@@ -125,18 +126,69 @@ public class Test {
 	}
 
 	private static void companyFacadeTest() throws DaoException {
-		CompanyFacade companyFasade = new CompanyFacade(1001);
-		System.out.println("Is company exist " + companyFasade.login("4321", "999"));
+
+		System.out.println("company test start:");
+//		String email = "Angel.Bakeries@company.com";
+		String email = "Elledi@company.com";
+		String password = "123456";
+
+		System.out.println("login with company:");
+		CompanyFacade companyFacade = (CompanyFacade) loginManagerTest(email, password, ClientType.Company);
+		if (companyFacade != null) {
+			System.out.println("login is successfull. email: " + email + " password: " + password);
+			// add coupon
+			System.out.println("add coupon company:");
+			Coupon coupon = new Coupon(companyFacade.getCompanyID(), Category.AUTOMOTIVE, "fasadTest", "desk", null,
+					null, 4, 20.2, null);
+			companyFacade.addCoupon(coupon);
+			// update coupon
+			coupon = companyFacade.getCompanyCoupon(coupon.getTitle());
+			if (coupon != null) {
+				System.out.println("update coupon company:");
+				coupon.setPrice(50);
+				companyFacade.updateCoupon(coupon);
+				// delete coupon
+				System.out.println("delete coupon company:");
+				companyFacade.deleteCoupon(coupon.getID());
+				// get all company coupons
+				System.out.println("get all company coupons:");
+				List<Coupon> coupons = companyFacade.getCompanyCoupons();
+				System.out.println("coupons size: " + coupons.size() + ". " + coupons);
+//				// get company coupons by category
+				System.out.println("get company coupons by category:");
+				coupons = companyFacade.getCompanyCoupons(Category.GAMES);
+				System.out.println("coupons size: " + coupons.size() + ". " + "category" + coupons);
+
+//				// get company coupons by maxPrice
+//				System.out.println("get company coupons by maxPrice:");
+//				System.out.println(companyFacade.getCompanyCoupons(10));
+//				// get company details
+//				System.out.println("get company details:");
+//				System.out.println(companyFacade.getCompanyDetails());
+
+			}
+
+//			
+//			
+//			
+		} else {
+			System.out.println("----login is failed. email: " + email + " password: " + password);
+		}
+		System.out.println("----company test end------\r\n\r\n");
+
+//		CompanyFacade companyFasade = new CompanyFacade(1001);
+//		System.out.println("Is company exist " + companyFasade.login("4321", "999"));
 		// companyFasade.getCompanyCoupons();
 		// System.out.println(companyFasade.getCompanyCoupons());
 		// Coupon coupon = new Coupon(1001, Category.ACCESSORIES, "bbb", "222", null,
 		// null, 15, 20, null);
 		// companyFasade.addCoupon(coupon);
 		// System.out.println(" Add coupon");
-		System.out
-				.println("Get coupons of company by categories " + companyFasade.getCompanyCoupons(Category.ELECTRIC));
-		System.out.println("Get coupons of company by price " + companyFasade.getCompanyCoupons(10));
-		System.out.println("get company details " + companyFasade.getCompanyDetails());
+//		System.out
+//				.println("Get coupons of company by categories " + companyFasade.getCompanyCoupons(Category.ELECTRIC));
+//		System.out.println("Get coupons of company by price " + companyFasade.getCompanyCoupons(10));
+//		System.out.println("get company details " + companyFasade.getCompanyDetails());
+
 	}
 
 	private static void customerFasadeTest() throws DaoException {

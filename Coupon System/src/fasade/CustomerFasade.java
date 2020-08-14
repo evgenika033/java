@@ -11,6 +11,10 @@ public class CustomerFasade extends ClientFasade {
 
 	private int customerID;
 
+	public int getCustomerID() {
+		return customerID;
+	}
+
 	public CustomerFasade() {
 		// TODO Auto-generated constructor stub
 	}

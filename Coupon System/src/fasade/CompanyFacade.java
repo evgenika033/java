@@ -15,6 +15,10 @@ public class CompanyFacade extends ClientFasade {
 		// TODO Auto-generated constructor stub
 	}
 
+	public int getCompanyID() {
+		return companyID;
+	}
+
 	public CompanyFacade(int companyID) {
 		super();
 		this.companyID = companyID;
@@ -49,6 +53,11 @@ public class CompanyFacade extends ClientFasade {
 
 	public List<Coupon> getCompanyCoupons(Category category) throws DaoException {
 		return couponsDao.getCompanyCoupons(companyID, category);
+
+	}
+
+	public Coupon getCompanyCoupon(String title) throws DaoException {
+		return couponsDao.get(companyID, title);
 
 	}
 
