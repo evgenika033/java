@@ -158,6 +158,7 @@ public class CouponsDao implements ICouponsDao<Coupon> {
 	 */
 	private void isCouponValidate(Coupon coupon) throws DaoException {
 		if (coupon == null) {
+			returnConnection();
 			throw new DaoException(StringHelper.EXCEPTION_COUPON_NOT_FOUND);
 		}
 
@@ -246,11 +247,13 @@ public class CouponsDao implements ICouponsDao<Coupon> {
 
 	@Override
 	public void addCouponPurchase(int customerID, int couponID) throws DaoException {
+		boolean forCustomerTest = false;
 		String sql = StringHelper.SQL_ADD.replaceAll(StringHelper.TABLE_PLACE_HOLDER, StringHelper.TABLE_CUSTVSCOUPONS);
 		sql = sql.replaceAll(StringHelper.PARAMETERS_ADD_PLACE_HOLDER,
 				StringHelper.ADD_PARAMETERS_CUSTVSCOUPONS_COUPON);
 		System.out.println(sql);
-		if (isPurchaseCouponAmountValid(couponID) && isPurchaseCouponCustomerValid(couponID, customerID)) {
+		if (isPurchaseCouponAmountValid(couponID)
+				&& isPurchaseCouponCustomerValid(couponID, customerID, forCustomerTest)) {
 			Coupon coupon = get(couponID);
 			coupon.setAmount(coupon.getAmount() - 1);
 			update(coupon);
@@ -557,13 +560,16 @@ public class CouponsDao implements ICouponsDao<Coupon> {
 		Coupon coupon = get(couponID);
 		isCouponValidate(coupon);
 		if (coupon.getAmount() < 1) {
+			returnConnection();
 			throw new DaoException(StringHelper.EXCEPTION_COUPON_AMOUNT_EMPTY);
 		}
 		return true;
 	}
 
+	// validate if current coupon is not purchased by current user
 	@Override
-	public boolean isPurchaseCouponCustomerValid(int couponID, int customerID) throws DaoException {
+	public boolean isPurchaseCouponCustomerValid(int couponID, int customerID, boolean forCustomerTest)
+			throws DaoException {
 		String sql = StringHelper.SQL_GET_COUNT.replaceAll(StringHelper.TABLE_PLACE_HOLDER,
 				StringHelper.TABLE_CUSTVSCOUPONS);
 		sql = sql.replaceAll(StringHelper.PARAMETERS_GET_PLACE_HOLDER,
@@ -577,6 +583,9 @@ public class CouponsDao implements ICouponsDao<Coupon> {
 			returnConnection();
 			if (resultSet.next()) {
 				if (resultSet.getInt(1) > 0) {
+					if (forCustomerTest) {
+						return false;
+					}
 					throw new DaoException(StringHelper.EXCEPTION_COUPON_PURCHASE_ALREADY_EXIST_IN_CUSTOMER);
 				}
 			}

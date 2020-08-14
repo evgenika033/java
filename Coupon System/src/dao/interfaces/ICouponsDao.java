@@ -121,10 +121,13 @@ public interface ICouponsDao<T> extends IDaoCrud<T> {
 	 * @return
 	 * @throws DaoException
 	 */
-	boolean isPurchaseCouponCustomerValid(int couponID, int customerID) throws DaoException;
+	boolean isPurchaseCouponCustomerValid(int couponID, int customerID, boolean forCustomerTest) throws DaoException;
 
 	List<T> get(Date date) throws DaoException;
 
 	T get(int companyID, String title) throws DaoException;
+
+	// boolean isPurchaseCouponCustomerValid(int couponID, int customerID, boolean
+	// forCustomerTest) throws DaoException;
 
 }

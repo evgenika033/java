@@ -97,7 +97,7 @@ public class StringHelper {
 	public static final String GET_PARAMETERS_COUPON = "couponId=?";
 	public static final String GET_PARAMETERS_COUPONS_OF_COMPANY = "companyId=?";
 	public static final String GET_PARAMETERS_COUPONS_OF_COMPANY_BY_CATEGORY = "companyId=? and categoryId=?";
-	public static final String GET_PARAMETERS_COUPONS_OF_COMPANY_BY_PRICE = "companyId=? and price=?";
+	public static final String GET_PARAMETERS_COUPONS_OF_COMPANY_BY_PRICE = "companyId=? and price <=?";
 	public static final String DELETE_PARAMETERS_COUPON = "couponId=?";
 	public static final String DELETE_PARAMETERS_CUSTVSCOUPONS = "customerId=? and couponId=?";
 	public static final String TABLE_PLACE_HOLDER = "_TABLE_NAME_";

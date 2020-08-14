@@ -158,6 +158,7 @@ public class CustomersDao implements ICustomersDao<Customer> {
 			preparedStatement.setString(1, email);
 			preparedStatement.setString(2, password);
 			ResultSet resultSet = preparedStatement.executeQuery();
+			returnConnection();
 			if (resultSet.next()) {
 				return resultToCustomer(resultSet);
 			}

@@ -67,7 +67,7 @@ public class ConnectionPool {
 		Iterator<Connection> it = connections.iterator();
 		java.sql.Connection con = it.next();
 		it.remove();
-		// System.out.println("get connection. size " + connections.size());
+//		System.out.println("get connection. size " + connections.size());
 		return con;
 
 	}
@@ -79,18 +79,21 @@ public class ConnectionPool {
 	public synchronized void returnConnection(Connection connection) {
 		connections.add(connection);
 		notifyAll();
-		// System.out.println("return connection. size " + connections.size());
+//		System.out.println("return connection. size " + connections.size());
 	}
 
+	/**
+	 * close all opened connection. for stop application or maintenance
+	 * 
+	 * @throws DatabaseException
+	 */
 	public synchronized void closeAllConnections() throws DatabaseException {
 		while (connections.size() < poolSize) {
 			try {
 				wait();
 			} catch (InterruptedException e) {
 				throw new DatabaseException(StringHelper.EXCEPTION_CONNECTION_CLOSE_WAIT, e);
-
 			}
-
 		}
 		Iterator<Connection> iterator = connections.iterator();
 		while (iterator.hasNext()) {

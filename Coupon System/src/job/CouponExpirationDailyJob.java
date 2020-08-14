@@ -17,6 +17,11 @@ public class CouponExpirationDailyJob implements Runnable {
 	private CouponsDao couponsDao;
 	private boolean quit;
 	private int jobInterval;
+	private boolean quitReaded;
+
+	public boolean isQuitReaded() {
+		return quitReaded;
+	}
 
 	public CouponExpirationDailyJob(CouponsDao couponsDao, boolean quit) {
 		init();
@@ -31,6 +36,7 @@ public class CouponExpirationDailyJob implements Runnable {
 	private void init() {
 		jobInterval = Integer.valueOf(
 				PropertiesController.getProperties().getProperty(StringHelper.JOB_COUPON_EXPIRATION_INTERVAL)) * 60000;
+		quitReaded = false;
 	}
 
 	private Date getDate() {
@@ -58,6 +64,7 @@ public class CouponExpirationDailyJob implements Runnable {
 				e.printStackTrace();
 			}
 		}
+		quitReaded = true;
 		System.out.println("job stopped");
 	}
 

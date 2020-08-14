@@ -11,14 +11,18 @@ public class CustomerFasade extends ClientFasade {
 
 	private int customerID;
 
-	public int getCustomerID() {
-		return customerID;
-	}
-
+	/**
+	 * 
+	 */
 	public CustomerFasade() {
 		// TODO Auto-generated constructor stub
 	}
 
+	/**
+	 * ctor
+	 * 
+	 * @param customerID
+	 */
 	public CustomerFasade(int customerID) {
 		this.customerID = customerID;
 	}
@@ -34,29 +38,75 @@ public class CustomerFasade extends ClientFasade {
 
 	}
 
-	public void purchaseCoupon(Coupon coupon) {
-
+	/**
+	 * purchase coupon
+	 * 
+	 * @param couponID
+	 * @throws DaoException
+	 */
+	public void purchaseCoupon(int couponID) throws DaoException {
+		couponsDao.addCouponPurchase(customerID, couponID);
 	}
 
-// לבדוק מה מחזירה מטודה
+	/**
+	 * check if this coupon can be purchase by current customer
+	 * 
+	 * @param couponID
+	 * @return
+	 * @throws DaoException
+	 */
+	public boolean couponCanBePurchase(int couponID) throws DaoException {
+		boolean forCustomerTest = true;
+		return couponsDao.isPurchaseCouponCustomerValid(couponID, customerID, forCustomerTest);
+	}
+
+	/**
+	 * get customer coupons
+	 * 
+	 * @return
+	 * @throws DaoException
+	 */
 	public List<Coupon> getCustomerCoupons() throws DaoException {
 		return couponsDao.getCustomerCoupons(customerID);
 
 	}
 
+	/**
+	 * get customer coupons by category
+	 * 
+	 * @param category
+	 * @return
+	 * @throws DaoException
+	 */
 	public List<Coupon> getCustomerCoupons(Category category) throws DaoException {
 		return couponsDao.getCustomerCoupons(customerID, category);
 
 	}
 
+	/**
+	 * get coustomer coupons where price <= max price
+	 * 
+	 * @param maxPrice
+	 * @return
+	 * @throws DaoException
+	 */
 	public List<Coupon> getCustomerCoupons(double maxPrice) throws DaoException {
 		return couponsDao.getCustomerCoupons(customerID, maxPrice);
 
 	}
 
+	/**
+	 * get customer
+	 * 
+	 * @return
+	 * @throws DaoException
+	 */
 	public Customer getCustomerDetails() throws DaoException {
 		return customersDao.get(customerID);
 
 	}
 
+	public int getCustomerID() {
+		return customerID;
+	}
 }

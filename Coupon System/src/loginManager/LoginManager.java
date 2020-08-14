@@ -10,10 +10,18 @@ public class LoginManager {
 
 	private static LoginManager instance;
 
+	/**
+	 * ctor
+	 */
 	private LoginManager() {
 
 	}
 
+	/**
+	 * instance of LoginManager lazy init
+	 * 
+	 * @return
+	 */
 	public static LoginManager getInstance() {
 		if (instance == null) {
 			instance = new LoginManager();
@@ -21,6 +29,15 @@ public class LoginManager {
 		return instance;
 	}
 
+	/**
+	 * login with email, password and client type
+	 * 
+	 * @param email
+	 * @param password
+	 * @param clientType
+	 * @return
+	 * @throws DaoException
+	 */
 	public ClientFasade login(String email, String password, ClientType clientType) throws DaoException {
 		switch (clientType) {
 		case Administrator:
@@ -35,6 +52,14 @@ public class LoginManager {
 		}
 	}
 
+	/**
+	 * login for admins
+	 * 
+	 * @param email
+	 * @param password
+	 * @return
+	 * @throws DaoException
+	 */
 	private ClientFasade loginAdmin(String email, String password) throws DaoException {
 		AdminFasade adminFasade = new AdminFasade();
 		if (adminFasade.login(email, password)) {
@@ -44,6 +69,14 @@ public class LoginManager {
 		}
 	}
 
+	/**
+	 * login for customers
+	 * 
+	 * @param email
+	 * @param password
+	 * @return
+	 * @throws DaoException
+	 */
 	private ClientFasade loginCustomer(String email, String password) throws DaoException {
 		CustomerFasade customerFasade = new CustomerFasade();
 		if (customerFasade.login(email, password)) {
@@ -53,6 +86,14 @@ public class LoginManager {
 		}
 	}
 
+	/**
+	 * login for companies
+	 * 
+	 * @param email
+	 * @param password
+	 * @return
+	 * @throws DaoException
+	 */
 	private ClientFasade loginCompany(String email, String password) throws DaoException {
 		CompanyFacade companyFacade = new CompanyFacade();
 		if (companyFacade.login(email, password)) {
