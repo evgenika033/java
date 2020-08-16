@@ -41,18 +41,20 @@ public class CustomersDao implements ICustomersDao<Customer> {
 		sql = sql.replaceAll(StringHelper.TABLE_PLACE_HOLDER, StringHelper.TABLE_CUSTOMER)
 				.replaceAll("_ADD_PARAMETERS_", StringHelper.ADD_PARAMETERS_CUSTOMER);
 		System.out.println(sql);
-		getConnection();
-		try (PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
-			preparedStatement.setString(1, addObject.getFirstName());
-			preparedStatement.setString(2, addObject.getLastName());
-			preparedStatement.setString(3, addObject.getEmail());
-			preparedStatement.setString(4, addObject.getPassword());
-			preparedStatement.executeUpdate();
-			returnConnection();
-			System.out.println("customer inserted: " + addObject.getFirstName() + " " + addObject.getLastName());
-		} catch (SQLException e) {
-			returnConnection();
-			throw new DaoException("insert exception: ", e);
+		if (isCustomerValid(addObject.getEmail())) {
+			getConnection();
+			try (PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
+				preparedStatement.setString(1, addObject.getFirstName());
+				preparedStatement.setString(2, addObject.getLastName());
+				preparedStatement.setString(3, addObject.getEmail());
+				preparedStatement.setString(4, addObject.getPassword());
+				preparedStatement.executeUpdate();
+				returnConnection();
+				System.out.println("customer inserted: " + addObject.getFirstName() + " " + addObject.getLastName());
+			} catch (SQLException e) {
+				returnConnection();
+				throw new DaoException("insert exception: ", e);
+			}
 		}
 
 	}
@@ -95,6 +97,29 @@ public class CustomersDao implements ICustomersDao<Customer> {
 		getConnection();
 		try (PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
 			preparedStatement.setInt(1, id);
+			ResultSet resultSet = preparedStatement.executeQuery();
+			returnConnection();
+			if (resultSet.next()) {
+				return resultToCustomer(resultSet);
+			}
+			returnConnection();
+			return null;
+		} catch (SQLException e) {
+			returnConnection();
+			throw new DaoException(StringHelper.EXCEPTION_GET, e);
+		}
+
+	}
+
+	@Override
+	public Customer get(String email) throws DaoException {
+		String sql = StringHelper.SQL_GET;
+		sql = sql.replaceAll(StringHelper.TABLE_PLACE_HOLDER, StringHelper.TABLE_CUSTOMER)
+				.replaceAll("_GET_PARAMETERS_", StringHelper.GET_PARAMETERS_CUSTOMER_BY_EMAIL);
+		System.out.println(sql);
+		getConnection();
+		try (PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
+			preparedStatement.setString(1, email);
 			ResultSet resultSet = preparedStatement.executeQuery();
 			returnConnection();
 			if (resultSet.next()) {
@@ -187,6 +212,30 @@ public class CustomersDao implements ICustomersDao<Customer> {
 		} catch (SQLException e) {
 			returnConnection();
 			throw new DaoException(StringHelper.EXCEPTION_DELETE, e);
+		}
+
+	}
+
+	@Override
+	public boolean isCustomerValid(String email) throws DaoException {
+		String sql = StringHelper.SQL_GET_COUNT.replaceAll(StringHelper.TABLE_PLACE_HOLDER,
+				StringHelper.TABLE_CUSTOMER);
+		sql = sql.replaceAll("_GET_PARAMETERS_", StringHelper.GET_PARAMETERS_CUSTOMER_BY_EMAIL);
+		System.out.println(sql);
+		getConnection();
+		try (PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
+			preparedStatement.setString(1, email);
+			ResultSet resultSet = preparedStatement.executeQuery();
+			returnConnection();
+			if (resultSet.next()) {
+				if (resultSet.getInt(1) > 0) {
+					throw new DaoException(StringHelper.EXCEPTION_CUSTOMER_ADD_ALREADY_EXIST);
+				}
+			}
+			return true;
+		} catch (SQLException e) {
+			returnConnection();
+			throw new DaoException(StringHelper.EXCEPTION_GET, e);
 		}
 
 	}

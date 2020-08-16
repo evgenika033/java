@@ -36,4 +36,6 @@ public interface ICompaniesDao<T> extends IDaoCrud<T> {
 	 */
 	boolean isCompanyValid(String companyEmail, int companyID) throws DaoException;
 
+	T get(String companyName) throws DaoException;
+
 }

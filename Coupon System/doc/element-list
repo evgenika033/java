@@ -1,0 +1,12 @@
+app
+beans
+configuration
+connectionPool
+dao
+dao.interfaces
+exceptions
+fasade
+job
+loginManager
+test
+utils

@@ -39,8 +39,6 @@ public class CompaniesDao implements ICompaniesDao<Company> {
 		// replace place_holders
 		sql = sql.replaceAll(StringHelper.TABLE_PLACE_HOLDER, StringHelper.TABLE_COMPANIES)
 				.replaceAll(StringHelper.PARAMETERS_ADD_PLACE_HOLDER, StringHelper.ADD_PARAMETERS_COMPANIES);
-		// доказательство того, что требования конкретного пользователя, продукта,
-		// услуги или системы удовлетворены
 		if (isCompanyValid(addObject.getName(), addObject.getEmail())) {
 			System.out.println(sql);
 			getConnection();
@@ -134,6 +132,26 @@ public class CompaniesDao implements ICompaniesDao<Company> {
 			throw new DaoException(StringHelper.EXCEPTION_GET, e);
 		}
 
+	}
+
+	@Override
+	public Company get(String companyName) throws DaoException {
+		String sql = StringHelper.SQL_GET;
+		sql = sql.replaceAll(StringHelper.TABLE_PLACE_HOLDER, StringHelper.TABLE_COMPANIES)
+				.replaceAll(StringHelper.PARAMETERS_GET_PLACE_HOLDER, StringHelper.GET_PARAMETERS_COMPANIES_BY_NAME);
+		getConnection();
+		try (PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
+			preparedStatement.setString(1, companyName);
+			ResultSet resultSet = preparedStatement.executeQuery();
+			returnConnection();
+			if (resultSet.next()) {
+				return resultToCompany(resultSet);
+			}
+			return null;
+		} catch (SQLException e) {
+			returnConnection();
+			throw new DaoException(StringHelper.EXCEPTION_GET, e);
+		}
 	}
 
 	// set company from resultSet

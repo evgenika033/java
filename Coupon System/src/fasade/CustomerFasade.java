@@ -84,7 +84,7 @@ public class CustomerFasade extends ClientFasade {
 	}
 
 	/**
-	 * get coustomer coupons where price <= max price
+	 * get customer coupons where price <= max price
 	 * 
 	 * @param maxPrice
 	 * @return

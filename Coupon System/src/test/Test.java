@@ -8,6 +8,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import beans.Category;
 import beans.Company;
 import beans.Coupon;
+import beans.Customer;
 import configuration.DatabaseCreator;
 import configuration.PropertiesController;
 import connectionPool.ConnectionPool;
@@ -36,15 +37,15 @@ public class Test {
 			// read all parameters
 			checkParameters();
 			// start job
-			job();
+			// job();
 			// execute tests
 			customerFasadeTest();
 			companyFacadeTest();
 			adminFacadeTest();
 			// stop job
-			job.stop();
+			// job.stop();
 			// job stop monitoring
-			jobStopMonitor();
+			// jobStopMonitor();
 			// close all connections
 			ConnectionPool.getInstance().closeAllConnections();
 			System.out.println("--------end program---------");
@@ -158,12 +159,56 @@ public class Test {
 		// login
 		System.out.println("admin test start:");
 		String email = "admin@admin.com";
-		String password = "admim";
+		String password = "admin";
 		// login with admin
 		AdminFasade adminFasade = (AdminFasade) loginManagerTest(email, password, ClientType.Administrator);
 		if (adminFasade != null) {
 			// after login success start tests
 			System.out.println("login is successfull. email: " + email + " password: " + password);
+			// addCompany
+			System.out.println("add  company:");
+			Company company = new Company("Versis", "Versis@com", "12345");
+			adminFasade.addCompany(company);
+			// get company
+			System.out.println("get company");
+			company = adminFasade.getCompany(company.getName());
+			if (company != null) {
+				// update company
+				String name = company.getName() + "1";
+				company.setName(name);
+				System.out.println("update  company name: " + name);
+				adminFasade.updateCompany(company);
+				// delete company
+				System.out.println("delete  company:");
+				adminFasade.deleteCompany(company.getID());
+
+				// getCompanies
+				System.out.println("get companies: ");
+				System.out.println(adminFasade.getCompanies());
+
+				// add customer
+				System.out.println("add customer: ");
+				Customer customer = new Customer("Moti", "Ostrovski", "111@222", "123456");
+				adminFasade.addCustomer(customer);
+				// get customer
+				System.out.println("get customer");
+				customer = adminFasade.getCustomer(customer.getEmail());
+
+				if (customer != null) {
+					// update customer
+					// String name= customer.getEmail(customer.getEmail());
+
+					// delete customer
+					System.out.println("delete customer:");
+					adminFasade.deleteCustomer(customer.getID());
+
+				}
+
+			}
+
+			// update company
+			// company=adminFasade.updateCompany(company);
+			// System.out.println("update company: ");
 
 		} else {
 			// login failed

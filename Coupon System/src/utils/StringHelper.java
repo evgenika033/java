@@ -50,6 +50,7 @@ public class StringHelper {
 	public static final String EXCEPTION_COUPON_AMOUNT_EMPTY = "coupon amount is empty";
 	public static final String EXCEPTION_CONNECTION_CLOSE_WAIT = "connection pool did not close all connections";
 	public static final String EXCEPTION_CONNECTION_CLOSE = "connection close exception";
+	public static final String EXCEPTION_CUSTOMER_ADD_ALREADY_EXIST = "customer with same email address is already exist";
 	// ----------------------------------
 	// SQL queries
 	// create/ drop database
@@ -112,6 +113,7 @@ public class StringHelper {
 	public static final String UPDATE_PARAMETERS_COMPANIES = "companyName=?,companyEmail=?,companyPassword=? where companyId=?";
 	public static final String ADD_PARAMETERS_COMPANIES = "?,?,?";
 	public static final String GET_PARAMETERS_COMPANIES = "companyId=?";
+	public static final String GET_PARAMETERS_COMPANIES_BY_NAME = "companyName like ?";
 	public static final String DELETE_PARAMETERS_COMPANIES = "companyId=?";
 	public static final String GET_PARAMETERS_COMPANY_BY_EMAIL_AND_PASSWORD = "companyEmail like ? and companyPassword like ?";
 	public static final String GET_PARAMETERS_COUPONS_OF_OTHER_COMPANY_BY_TITLE = "companyId !=? and title like ?";
@@ -124,6 +126,7 @@ public class StringHelper {
 	public static final String UPDATE_PARAMETERS_COUSTOMER = "firstName=?,lastName=?,customerEmail=?,customerPassword=? where customerId=?";
 	public static final String ADD_PARAMETERS_CUSTOMER = "?,?,?,?";
 	public static final String GET_PARAMETERS_CUSTOMER = "customerId=?";
+	public static final String GET_PARAMETERS_CUSTOMER_BY_EMAIL = "customerEmail like ?";
 	public static final String DELETE_PARAMETERS_CUSTOMER = "customerId=?";
 	// ----------------------------------
 	// other

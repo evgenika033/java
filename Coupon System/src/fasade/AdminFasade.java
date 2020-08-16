@@ -25,6 +25,7 @@ public class AdminFasade extends ClientFasade {
 	}
 
 	/**
+	 * add company
 	 * 
 	 * @param company
 	 * @throws DaoException
@@ -34,6 +35,7 @@ public class AdminFasade extends ClientFasade {
 	}
 
 	/**
+	 * update company
 	 * 
 	 * @param company
 	 * @throws DaoException
@@ -43,6 +45,7 @@ public class AdminFasade extends ClientFasade {
 	}
 
 	/**
+	 * delete company
 	 * 
 	 * @param companyID
 	 * @throws DaoException
@@ -59,8 +62,9 @@ public class AdminFasade extends ClientFasade {
 	}
 
 	/**
+	 * get companies
 	 * 
-	 * @return
+	 * @return List<Company>
 	 * @throws DaoException
 	 */
 	public List<Company> getCompanies() throws DaoException {
@@ -75,12 +79,12 @@ public class AdminFasade extends ClientFasade {
 
 	/**
 	 * 
-	 * @param CompanyID
-	 * @return
+	 * @param companyID
+	 * @return Company
 	 * @throws DaoException
 	 */
-	public Company getCompany(int CompanyID) throws DaoException {
-		Company company = companiesDao.get(CompanyID);
+	public Company getCompany(int companyID) throws DaoException {
+		Company company = companiesDao.get(companyID);
 		int id = company.getID();
 		List<Coupon> coupons = couponsDao.getCompanyCoupons(id);
 		company.setCoupons(coupons);
@@ -88,6 +92,22 @@ public class AdminFasade extends ClientFasade {
 	}
 
 	/**
+	 * get company by name
+	 * 
+	 * @param companyName
+	 * @return Company
+	 * @throws DaoException
+	 */
+	public Company getCompany(String companyName) throws DaoException {
+		Company company = companiesDao.get(companyName);
+		int id = company.getID();
+		List<Coupon> coupons = couponsDao.getCompanyCoupons(id);
+		company.setCoupons(coupons);
+		return company;
+	}
+
+	/**
+	 * add customer
 	 * 
 	 * @param customer
 	 * @throws DaoException
@@ -97,6 +117,7 @@ public class AdminFasade extends ClientFasade {
 	}
 
 	/**
+	 * update customer
 	 * 
 	 * @param customer
 	 * @throws DaoException
@@ -106,6 +127,7 @@ public class AdminFasade extends ClientFasade {
 	}
 
 	/**
+	 * delete customer
 	 * 
 	 * @param customerID
 	 * @throws DaoException
@@ -119,8 +141,9 @@ public class AdminFasade extends ClientFasade {
 	}
 
 	/**
+	 * get customers
 	 * 
-	 * @return
+	 * @return Customer
 	 * @throws DaoException
 	 */
 	public List<Customer> getCustomers() throws DaoException {
@@ -134,13 +157,30 @@ public class AdminFasade extends ClientFasade {
 	}
 
 	/**
+	 * get customer
 	 * 
 	 * @param CustomerID
-	 * @return
+	 * @return Customer
 	 * @throws DaoException
 	 */
 	public Customer getCustomer(int CustomerID) throws DaoException {
 		Customer customer = customersDao.get(CustomerID);
+		int id = customer.getID();
+		List<Coupon> coupons = couponsDao.getCustomerCoupons(id);
+		customer.setCoupons(coupons);
+		return customer;
+
+	}
+
+	/**
+	 * get customer by email
+	 * 
+	 * @param CustomerID
+	 * @return Customer
+	 * @throws DaoException
+	 */
+	public Customer getCustomer(String email) throws DaoException {
+		Customer customer = customersDao.get(email);
 		int id = customer.getID();
 		List<Coupon> coupons = couponsDao.getCustomerCoupons(id);
 		customer.setCoupons(coupons);
