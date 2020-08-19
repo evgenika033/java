@@ -17,6 +17,7 @@ public class CustomersDao implements ICustomersDao<Customer> {
 
 	private Connection connection;
 
+	// get connection from connectionPool.
 	private void getConnection() throws DaoException {
 		try {
 			connection = ConnectionPool.getInstance().getConnection();
@@ -25,6 +26,7 @@ public class CustomersDao implements ICustomersDao<Customer> {
 		}
 	}
 
+	// return connection to connectionPool
 	private void returnConnection() throws DaoException {
 		try {
 			ConnectionPool.getInstance().returnConnection(connection);

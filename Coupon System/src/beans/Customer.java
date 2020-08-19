@@ -11,10 +11,16 @@ public class Customer {
 	private String password;
 	private List<Coupon> coupons;
 
+	/*
+	 * ctor
+	 */
 	public Customer() {
 		init();
 	}
 
+	/*
+	 * ctor
+	 */
 	public Customer(String firstName, String lastName, String email, String password) {
 		this();
 		this.firstName = firstName;
@@ -23,6 +29,9 @@ public class Customer {
 		this.password = password;
 
 	}
+	/*
+	 * ctor
+	 */
 
 	public Customer(int ID, String firstName, String lastName, String email, String password) {
 		this(firstName, lastName, email, password);
@@ -30,6 +39,9 @@ public class Customer {
 
 	}
 
+	/*
+	 * ctor
+	 */
 	public void init() {
 		firstName = "";
 		lastName = "";
@@ -38,6 +50,9 @@ public class Customer {
 		coupons = new ArrayList<Coupon>();
 	}
 
+	/*
+	 * getters/setters
+	 */
 	public int getID() {
 		return ID;
 	}

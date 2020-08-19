@@ -13,10 +13,10 @@ public abstract class ClientFasade {
 	/**
 	 * login
 	 * 
-	 * @param email
-	 * @param password
-	 * @return
-	 * @throws DaoException
+	 * @param email    the user's email
+	 * @param password the user's password
+	 * @return boolean
+	 * @throws DaoException on database work
 	 */
 	public abstract boolean login(String email, String password) throws DaoException;
 }

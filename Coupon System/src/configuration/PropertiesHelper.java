@@ -1,5 +1,9 @@
 package configuration;
 
+/*
+ *This Class store final properties Strings 
+ * 
+ */
 public class PropertiesHelper {
 
 	protected static final String DB_SERVER_VALUE = "localhost";

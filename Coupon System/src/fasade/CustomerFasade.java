@@ -12,10 +12,10 @@ public class CustomerFasade extends ClientFasade {
 	private int customerID;
 
 	/**
-	 * 
+	 * ctor
 	 */
 	public CustomerFasade() {
-		// TODO Auto-generated constructor stub
+
 	}
 
 	/**
@@ -52,7 +52,7 @@ public class CustomerFasade extends ClientFasade {
 	 * check if this coupon can be purchase by current customer
 	 * 
 	 * @param couponID
-	 * @return
+	 * @return boolean
 	 * @throws DaoException
 	 */
 	public boolean couponCanBePurchase(int couponID) throws DaoException {
@@ -63,7 +63,7 @@ public class CustomerFasade extends ClientFasade {
 	/**
 	 * get customer coupons
 	 * 
-	 * @return
+	 * @return list of coupons
 	 * @throws DaoException
 	 */
 	public List<Coupon> getCustomerCoupons() throws DaoException {
@@ -75,7 +75,7 @@ public class CustomerFasade extends ClientFasade {
 	 * get customer coupons by category
 	 * 
 	 * @param category
-	 * @return
+	 * @return list of coupons
 	 * @throws DaoException
 	 */
 	public List<Coupon> getCustomerCoupons(Category category) throws DaoException {
@@ -84,10 +84,10 @@ public class CustomerFasade extends ClientFasade {
 	}
 
 	/**
-	 * get customer coupons where price <= max price
+	 * get customer coupons where price less then max price
 	 * 
 	 * @param maxPrice
-	 * @return
+	 * @return list of coupons
 	 * @throws DaoException
 	 */
 	public List<Coupon> getCustomerCoupons(double maxPrice) throws DaoException {
@@ -96,9 +96,9 @@ public class CustomerFasade extends ClientFasade {
 	}
 
 	/**
-	 * get customer
+	 * get customer details
 	 * 
-	 * @return
+	 * @return Customer
 	 * @throws DaoException
 	 */
 	public Customer getCustomerDetails() throws DaoException {
@@ -106,6 +106,11 @@ public class CustomerFasade extends ClientFasade {
 
 	}
 
+	/**
+	 * get customer id
+	 * 
+	 * @return customerID
+	 */
 	public int getCustomerID() {
 		return customerID;
 	}

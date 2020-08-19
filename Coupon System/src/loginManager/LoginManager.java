@@ -20,7 +20,7 @@ public class LoginManager {
 	/**
 	 * instance of LoginManager lazy init
 	 * 
-	 * @return
+	 * @return LoginManager
 	 */
 	public static LoginManager getInstance() {
 		if (instance == null) {
@@ -35,7 +35,7 @@ public class LoginManager {
 	 * @param email
 	 * @param password
 	 * @param clientType
-	 * @return
+	 * @return ClientFasade
 	 * @throws DaoException
 	 */
 	public ClientFasade login(String email, String password, ClientType clientType) throws DaoException {
@@ -57,7 +57,7 @@ public class LoginManager {
 	 * 
 	 * @param email
 	 * @param password
-	 * @return
+	 * @return adminFasade
 	 * @throws DaoException
 	 */
 	private ClientFasade loginAdmin(String email, String password) throws DaoException {
@@ -74,7 +74,7 @@ public class LoginManager {
 	 * 
 	 * @param email
 	 * @param password
-	 * @return
+	 * @return customerFasade
 	 * @throws DaoException
 	 */
 	private ClientFasade loginCustomer(String email, String password) throws DaoException {
@@ -91,7 +91,7 @@ public class LoginManager {
 	 * 
 	 * @param email
 	 * @param password
-	 * @return
+	 * @return companyFacade
 	 * @throws DaoException
 	 */
 	private ClientFasade loginCompany(String email, String password) throws DaoException {

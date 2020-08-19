@@ -10,10 +10,16 @@ public class Company {
 	private String password;
 	private List<Coupon> coupons;
 
+	/**
+	 * ctor
+	 */
 	public Company() {
 		init();
 	}
 
+	/*
+	 * ctor
+	 */
 	public Company(String name, String email, String password) {
 		this();
 		this.name = name;
@@ -22,6 +28,9 @@ public class Company {
 
 	}
 
+	/*
+	 * ctor
+	 */
 	public Company(int id, String name, String email, String password) {
 
 		this(name, email, password);
@@ -29,6 +38,9 @@ public class Company {
 
 	}
 
+	/*
+	 * init
+	 */
 	private void init() {
 		name = "";
 		email = "";
@@ -36,6 +48,9 @@ public class Company {
 		coupons = new ArrayList<>();
 	}
 
+	/*
+	 * getters/setters
+	 */
 	public int getID() {
 		return ID;
 	}

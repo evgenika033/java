@@ -16,6 +16,7 @@ import utils.StringHelper;
 public class CompaniesDao implements ICompaniesDao<Company> {
 	private Connection connection;
 
+	// get connection
 	private void getConnection() throws DaoException {
 		try {
 			connection = ConnectionPool.getInstance().getConnection();

@@ -30,7 +30,7 @@ public class ConnectionPool {
 
 	/**
 	 * 
-	 * @return
+	 * @return ConnectionPool
 	 * @throws SQLException
 	 */
 	public static ConnectionPool getInstance() throws SQLException {
@@ -43,7 +43,7 @@ public class ConnectionPool {
 	}
 
 	/**
-	 * 
+	 * init
 	 */
 	private void init() {
 		connections = new HashSet<>();
@@ -54,7 +54,7 @@ public class ConnectionPool {
 
 	/**
 	 * 
-	 * @return
+	 * @return Connection
 	 */
 	public synchronized Connection getConnection() {
 		while (connections.isEmpty()) {

@@ -19,6 +19,7 @@ public class CouponsDao implements ICouponsDao<Coupon> {
 	private Connection connection;
 	private CategoriesDao categoriesDao;
 
+	// ctor
 	public CouponsDao() {
 		init();
 	}
@@ -500,7 +501,7 @@ public class CouponsDao implements ICouponsDao<Coupon> {
 	 * convert coupon from resultSet
 	 * 
 	 * @param resultSet
-	 * @return
+	 * @return Coupon
 	 * @throws DaoException
 	 */
 	private Coupon resultToCoupon(ResultSet resultSet) throws DaoException {

@@ -64,7 +64,7 @@ public class AdminFasade extends ClientFasade {
 	/**
 	 * get companies
 	 * 
-	 * @return List<Company>
+	 * @return list of companies
 	 * @throws DaoException
 	 */
 	public List<Company> getCompanies() throws DaoException {
@@ -94,9 +94,9 @@ public class AdminFasade extends ClientFasade {
 	/**
 	 * get company by name
 	 * 
-	 * @param companyName
+	 * @param companyName company's name
 	 * @return Company
-	 * @throws DaoException
+	 * @throws DaoException database exceptions
 	 */
 	public Company getCompany(String companyName) throws DaoException {
 		Company company = companiesDao.get(companyName);
@@ -175,7 +175,7 @@ public class AdminFasade extends ClientFasade {
 	/**
 	 * get customer by email
 	 * 
-	 * @param CustomerID
+	 * @param email
 	 * @return Customer
 	 * @throws DaoException
 	 */

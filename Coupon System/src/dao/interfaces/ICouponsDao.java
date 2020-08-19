@@ -105,7 +105,7 @@ public interface ICouponsDao<T> extends IDaoCrud<T> {
 	boolean isCouponValid(int companyID, String title) throws DaoException;
 
 	/**
-	 * coupon's amount > 0
+	 * coupon's amount more than 0
 	 * 
 	 * @param couponID
 	 * @return

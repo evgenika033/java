@@ -37,15 +37,15 @@ public class Test {
 			// read all parameters
 			checkParameters();
 			// start job
-			// job();
+			job();
 			// execute tests
 			customerFasadeTest();
 			companyFacadeTest();
 			adminFacadeTest();
 			// stop job
-			// job.stop();
+			job.stop();
 			// job stop monitoring
-			// jobStopMonitor();
+			jobStopMonitor();
 			// close all connections
 			ConnectionPool.getInstance().closeAllConnections();
 			System.out.println("--------end program---------");
@@ -67,7 +67,7 @@ public class Test {
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-			System.out.println("wait for stopping job: " + counter);
+			System.out.println("wait for stopping job: 10/" + counter);
 		}
 	}
 
@@ -142,7 +142,7 @@ public class Test {
 	 * @param email
 	 * @param password
 	 * @param clientType
-	 * @return
+	 * @return ClientFasade
 	 * @throws DaoException
 	 */
 	private static ClientFasade loginManagerTest(String email, String password, ClientType clientType)
@@ -164,6 +164,7 @@ public class Test {
 		AdminFasade adminFasade = (AdminFasade) loginManagerTest(email, password, ClientType.Administrator);
 		if (adminFasade != null) {
 			// after login success start tests
+			// Company test
 			System.out.println("login is successfull. email: " + email + " password: " + password);
 			// addCompany
 			System.out.println("add  company:");
@@ -184,45 +185,45 @@ public class Test {
 
 				// getCompanies
 				System.out.println("get companies: ");
-				System.out.println(adminFasade.getCompanies());
+				List<Company> companies = adminFasade.getCompanies();
+				// System.out.println(adminFasade.getCompanies());
+				System.out.println(companies);
+			}
+			// ----------------------------------------------
 
-				// add customer
-				System.out.println("add customer: ");
-				Customer customer = new Customer("Moti", "Ostrovski", "111@222", "123456");
-				adminFasade.addCustomer(customer);
-				// get customer
-				System.out.println("get customer");
-				customer = adminFasade.getCustomer(customer.getEmail());
+			// customer test
+			// add customer
+			System.out.println("add customer: ");
+			Customer customer = new Customer("Moti", "Ostrovski", "111@222", "123456");
+			adminFasade.addCustomer(customer);
+			// get customer
+			System.out.println("get customer");
+			customer = adminFasade.getCustomer(customer.getEmail());
 
-				if (customer != null) {
-					// update customer
-					// String name= customer.getEmail(customer.getEmail());
+			// update customer
+			if (customer != null) {
 
-					// delete customer
-					System.out.println("delete customer:");
-					adminFasade.deleteCustomer(customer.getID());
+				String customerEmail = customer.getEmail() + "1";
+				customer.setEmail(customerEmail);
+				System.out.println("update  customer customerEmail: " + customerEmail);
+				adminFasade.updateCustomer(customer);
 
-				}
+				// delete customer
+				System.out.println("delete customer:");
+				adminFasade.deleteCustomer(customer.getID());
+				// get customers
+				System.out.println("get customers: ");
+				List<Customer> customers = adminFasade.getCustomers();
+				System.out.println("customers count: " + customers.size());
+				System.out.println(customers);
 
 			}
-
-			// update company
-			// company=adminFasade.updateCompany(company);
-			// System.out.println("update company: ");
 
 		} else {
 			// login failed
 			System.out.println("----login is failed. email: " + email + " password: " + password);
 		}
-		System.out.println("----company test end------\r\n\r\n");
-
-//		// System.out.println("try add company");
-//		// adminFasade.addCompany(new Company(1001, "ibm122", "email122@ibm.com",
-//		// "ibm11"));
-//		System.out.println("try update company");
-//		adminFasade.updateCompany(new Company(1001, "ibm12", "4321", "ibm14"));
-//		// System.out.println("get all companies " + adminFasade.getCompanies());
-		//
+		System.out.println("----admin test end------\r\n\r\n");
 
 	}
 

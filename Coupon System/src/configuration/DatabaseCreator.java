@@ -31,7 +31,6 @@ import utils.StringHelper;
 public class DatabaseCreator {
 	private String sqlConnection;
 	private Properties properties;
-	// private String sqlTable1;
 
 	/**
 	 * Constructor
@@ -42,9 +41,9 @@ public class DatabaseCreator {
 	}
 
 	/**
-	 * check if datatbase exist
+	 * check if database exist
 	 * 
-	 * @return
+	 * @return boolean
 	 * @throws DatabaseException
 	 */
 	private boolean isDatabaseExist() throws DatabaseException {
@@ -85,8 +84,9 @@ public class DatabaseCreator {
 	}
 
 	/**
+	 * create database
 	 * 
-	 * @return
+	 * @return int
 	 * @throws DatabaseException
 	 */
 	public int createDatabase() throws DatabaseException {
@@ -112,6 +112,10 @@ public class DatabaseCreator {
 		}
 	}
 
+	/*
+	 * create tables in database
+	 * 
+	 */
 	public void createTables() throws DatabaseException, DaoException {
 		try (Connection con = DriverManager.getConnection(PropertiesController.getSqlConnection());) {
 			System.out.println("connected to " + properties.getProperty(StringHelper.DB_DATABASE_NAME));
@@ -133,10 +137,15 @@ public class DatabaseCreator {
 
 	}
 
+	/*
+	 * insert Data
+	 */
 	private void insertData() throws DatabaseException, DaoException {
 
 		System.out.println("--------start of fill database----------");
+
 		// create companies from file
+
 		try (BufferedReader in = new BufferedReader(new FileReader("config/companies.csv"))) {
 			String line;
 			CompaniesDao companiesDao = new CompaniesDao();
@@ -145,11 +154,13 @@ public class DatabaseCreator {
 				companiesDao.add(new Company(companyText[0], companyText[1], companyText[2]));
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+
 			throw new DatabaseException(StringHelper.EXEPTION_DATABASE_CREATE + e);
 		}
 		System.out.println(">> companies filled");
+
 		// create customers from file
+
 		try (BufferedReader in = new BufferedReader(new FileReader("config/customers.csv"))) {
 			String line;
 			CustomersDao customersDao = new CustomersDao();
@@ -158,7 +169,7 @@ public class DatabaseCreator {
 				customersDao.add(new Customer(customerText[0], customerText[1], customerText[2], customerText[3]));
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+
 			throw new DatabaseException(StringHelper.EXEPTION_DATABASE_CREATE + e);
 		}
 		System.out.println(">> customers filled");
@@ -191,7 +202,7 @@ public class DatabaseCreator {
 				couponsDao.add(new Coupon(companyID, category, title, null, startDate, endDate, amount, price, null));
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+
 			throw new DatabaseException(StringHelper.EXEPTION_DATABASE_CREATE + e);
 		}
 
@@ -206,7 +217,7 @@ public class DatabaseCreator {
 						Integer.valueOf(customersVScouponsText[1]));
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+
 			throw new DatabaseException(StringHelper.EXEPTION_DATABASE_CREATE + e);
 		}
 		System.out.println("--------end of fill database----------");

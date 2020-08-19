@@ -14,10 +14,16 @@ public class Coupon {
 	private double price;
 	private String image;
 
+	/*
+	 * ctor
+	 */
 	public Coupon() {
-		init();
+
 	}
 
+	/*
+	 * ctor
+	 */
 	public Coupon(int companyID, Category category, String title, String description, Date startDate, Date endDate,
 			int amount, double price, String image) {
 		this();
@@ -33,6 +39,9 @@ public class Coupon {
 
 	}
 
+	/*
+	 * ctor
+	 */
 	public Coupon(int ID, int companyID, Category category, String title, String description, Date startDate,
 			Date endDate, int amount, double price, String image) {
 		this(companyID, category, title, description, startDate, endDate, amount, price, image);
@@ -40,16 +49,9 @@ public class Coupon {
 
 	}
 
-	private void init() {
-//		category = Category.DEFAULT;
-//		title = "";
-//		description = "";
-//		startDate = Date.valueOf("2020-07-12");
-//		endDate = Date.valueOf("2020-07-12");
-//		image = "";
-
-	}
-
+	/*
+	 * getters/setters
+	 */
 	public int getID() {
 		return ID;
 	}
