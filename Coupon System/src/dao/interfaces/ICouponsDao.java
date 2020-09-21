@@ -40,7 +40,7 @@ public interface ICouponsDao<T> extends IDaoCrud<T> {
 	 * get all customer's coupons
 	 * 
 	 * @param customerID
-	 * @return
+	 * @return coupons list
 	 * @throws DaoException
 	 */
 	List<Coupon> getCustomerCoupons(int customerID) throws DaoException;
@@ -50,7 +50,7 @@ public interface ICouponsDao<T> extends IDaoCrud<T> {
 	 * 
 	 * @param customerID
 	 * @param category
-	 * @return
+	 * @return coupons list
 	 * @throws DaoException
 	 */
 	List<Coupon> getCustomerCoupons(int customerID, Category category) throws DaoException;
@@ -60,7 +60,7 @@ public interface ICouponsDao<T> extends IDaoCrud<T> {
 	 * 
 	 * @param customerID
 	 * @param maxPrice
-	 * @return
+	 * @return coupons list
 	 * @throws DaoException
 	 */
 	List<Coupon> getCustomerCoupons(int customerID, double maxPrice) throws DaoException;
@@ -69,7 +69,7 @@ public interface ICouponsDao<T> extends IDaoCrud<T> {
 	 * get all company's coupons
 	 * 
 	 * @param companyID
-	 * @return
+	 * @return coupons list
 	 * @throws DaoException
 	 */
 	List<Coupon> getCompanyCoupons(int companyID) throws DaoException;
@@ -79,7 +79,7 @@ public interface ICouponsDao<T> extends IDaoCrud<T> {
 	 * 
 	 * @param companyID
 	 * @param category
-	 * @return
+	 * @return coupons list
 	 * @throws DaoException
 	 */
 	List<Coupon> getCompanyCoupons(int companyID, Category category) throws DaoException;
@@ -89,7 +89,7 @@ public interface ICouponsDao<T> extends IDaoCrud<T> {
 	 * 
 	 * @param companyID
 	 * @param maxPrice
-	 * @return
+	 * @return coupons list
 	 * @throws DaoException
 	 */
 	List<Coupon> getCompanyCoupons(int companyID, double maxPrice) throws DaoException;
@@ -99,7 +99,7 @@ public interface ICouponsDao<T> extends IDaoCrud<T> {
 	 * 
 	 * @param companyID
 	 * @param title
-	 * @return
+	 * @return boolean
 	 * @throws DaoException
 	 */
 	boolean isCouponValid(int companyID, String title) throws DaoException;
@@ -108,7 +108,7 @@ public interface ICouponsDao<T> extends IDaoCrud<T> {
 	 * coupon's amount more than 0
 	 * 
 	 * @param couponID
-	 * @return
+	 * @return boolean
 	 * @throws DaoException
 	 */
 	boolean isPurchaseCouponAmountValid(int couponID) throws DaoException;
@@ -125,9 +125,21 @@ public interface ICouponsDao<T> extends IDaoCrud<T> {
 
 	List<T> get(Date date) throws DaoException;
 
+	/**
+	 * get coupon
+	 * 
+	 * @param companyID
+	 * @param title
+	 * @return coupon
+	 * @throws DaoException
+	 */
 	T get(int companyID, String title) throws DaoException;
 
-	// boolean isPurchaseCouponCustomerValid(int couponID, int customerID, boolean
-	// forCustomerTest) throws DaoException;
+	/**
+	 * 
+	 * @return list of coupons ID
+	 * @throws DaoException
+	 */
+	List<Integer> getCouponsID() throws DaoException;
 
 }

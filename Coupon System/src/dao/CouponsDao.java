@@ -247,6 +247,26 @@ public class CouponsDao implements ICouponsDao<Coupon> {
 	}
 
 	@Override
+	public List<Integer> getCouponsID() throws DaoException {
+		List<Integer> ids = new ArrayList<>();
+		String sql = StringHelper.SQL_GET_ALL;
+		sql = sql.replaceAll(" \\* ", " couponId ");
+		sql = sql.replaceAll(StringHelper.TABLE_PLACE_HOLDER, StringHelper.TABLE_COUPON);
+		getConnection();
+		try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+			ResultSet resultSet = preparedStatement.executeQuery();
+			returnConnection();
+			while (resultSet.next()) {
+				ids.add(resultSet.getInt("couponId"));
+			}
+			return ids;
+		} catch (SQLException e) {
+			returnConnection();
+			throw new DaoException(StringHelper.EXCEPTION_GET_ALL, e);
+		}
+	}
+
+	@Override
 	public void addCouponPurchase(int customerID, int couponID) throws DaoException {
 		boolean forCustomerTest = false;
 		String sql = StringHelper.SQL_ADD.replaceAll(StringHelper.TABLE_PLACE_HOLDER, StringHelper.TABLE_CUSTVSCOUPONS);

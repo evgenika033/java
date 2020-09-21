@@ -2,6 +2,7 @@ package test;
 
 import java.io.File;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -49,6 +50,7 @@ public class Test {
 			// close all connections
 			ConnectionPool.getInstance().closeAllConnections();
 			System.out.println("--------end program---------");
+
 		} else {
 			System.out.println(StringHelper.EXCEPTION_PROPERTIES_NOT_READ);
 		}
@@ -308,9 +310,14 @@ public class Test {
 			// try to purchase coupon. randomize coupon ID: range 1001-1035
 			int couponID = ThreadLocalRandom.current().nextInt(1001, 1035 + 1);
 			// check if randomized coupon was not purchased earlier,else randomize next
+			// get existing list of coupons ids
+			List<Integer> listIDs = customerFasade.getCouponsID();
+			int[] ids = getIDsArray(listIDs);
+			System.out.println("list of coupons id: " + Arrays.toString(ids));
 			while (!customerFasade.couponCanBePurchase(couponID)) {
 				System.out.println("coupon was purchased earlier by customer: " + couponID);
-				couponID = ThreadLocalRandom.current().nextInt(1001, 1035 + 1);
+				int randomIndex = ThreadLocalRandom.current().nextInt(0, ids.length);
+				couponID = ids[randomIndex];
 				System.out.println("check if this coupon can be purchase: " + couponID);
 			}
 			System.out.println("true. coupon id: " + couponID);
@@ -324,6 +331,21 @@ public class Test {
 		}
 		System.out.println("----customer test end------\r\n\r\n");
 
+	}
+
+	/**
+	 * convert List of ids to array
+	 * 
+	 * @param listIDs
+	 * @return array of id
+	 */
+	private static int[] getIDsArray(List<Integer> listIDs) {
+		int[] ids = new int[listIDs.size()];
+		int counter = 0;
+		for (int val : listIDs) {
+			ids[counter++] = val;
+		}
+		return ids;
 	}
 
 }

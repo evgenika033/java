@@ -72,6 +72,16 @@ public class CustomerFasade extends ClientFasade {
 	}
 
 	/**
+	 * get list of coupons id
+	 * 
+	 * @return list of coupons id
+	 * @throws DaoException
+	 */
+	public List<Integer> getCouponsID() throws DaoException {
+		return couponsDao.getCouponsID();
+	}
+
+	/**
 	 * get customer coupons by category
 	 * 
 	 * @param category

@@ -25,6 +25,7 @@ public class ConnectionPool {
 		for (int i = 0; i < poolSize; i++) {
 			connections.add(DriverManager.getConnection(PropertiesController.getSqlConnection()));
 		}
+
 		System.out.println("connectionPool created with " + connections.size() + " connections ");
 	}
 
